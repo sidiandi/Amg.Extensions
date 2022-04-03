@@ -4,22 +4,22 @@ using System.ComponentModel;
 
 namespace example;
 
-class Program
+public class Program
 {
-    static void Main(string[] args) => Amg.GetOpt.GetOpt.Main(args, new Program());
+    static int Main(string[] args) => Amg.Program.Once();
 
     [Description("Add two numbers.")]
-    public int Add(int a, int b)
+    public virtual int Add(int a, int b)
     {
         return a + b;
     }
 
     [Description("Greet the world.")]
-    public void Greet()
+    public virtual void Greet()
     {
         Console.WriteLine($"Hello, {Name}.");
     }
 
     [Short('n'), Description("Name to greet")]
-    public string Name { get; set; } = "world";
+    public virtual string Name { get; set; } = "world";
 }

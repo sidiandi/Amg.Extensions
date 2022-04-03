@@ -70,7 +70,10 @@ public static class GetOpt
             var result = parser.Run().Result;
             foreach (var i in result)
             {
-                Console.WriteLine(i);
+                if (i is { })
+                {
+                    Console.WriteLine(i);
+                }
             }
         }
         catch (AggregateException aex)

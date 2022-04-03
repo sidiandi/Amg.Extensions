@@ -1,5 +1,4 @@
-﻿using Amg.Collections;
-using Amg.FileSystem;
+﻿using Amg.FileSystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 
-namespace Amg.Data;
+namespace Amg.Collections;
 
 public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
 {
@@ -86,7 +85,7 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
 
     public bool Contains(KeyValuePair<K, V> item)
     {
-        return GetValue<int>($"select count(*) from {table} where key = @key and value = @value",
+        return GetValue<long>($"select count(*) from {table} where key = @key and value = @value",
             ToParam(nameof(item.Key), item.Key),
             ToParam(nameof(item.Value), item.Value)
             ) == 1;

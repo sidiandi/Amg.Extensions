@@ -4,7 +4,7 @@ namespace example;
 
 class Program
 {
-    static int Main(string[] args) => Amg.GetOpt.GetOpt.Main(args);
+    static int Main(string[] args) => Amg.Program.GetOpt();
 
     public int Add(int a, int b)
     {

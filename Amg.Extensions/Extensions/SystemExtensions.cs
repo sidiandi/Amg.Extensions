@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Amg.Extensions;
 
-internal static class SystemExtensions
+public static class SystemExtensions
 {
     public static IEnumerable<string> SourceLocationsFromStackTrace(string? stackTrace)
     {
@@ -49,5 +49,12 @@ internal static class SystemExtensions
         {
             return null;
         }
+    }
+
+    public static Type? GetClassWithMainMethod()
+    {
+        var entryAssembly = Assembly.GetEntryAssembly();
+        var classWithMainMethod = entryAssembly?.EntryPoint?.DeclaringType;
+        return classWithMainMethod;
     }
 }

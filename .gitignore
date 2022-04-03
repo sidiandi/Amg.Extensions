@@ -1,0 +1,7 @@
+obj
+bin
+.vs
+out
+.cache
+TestResults
+launchSettings.json

@@ -23,10 +23,10 @@ public static class TestHelpers
         return stopwatch.Elapsed;
     }
 
-    public static TimeSpan MeasureTime(Func<Task> a)
+    public static async Task<TimeSpan> MeasureTime(Func<Task> a)
     {
         var stopwatch = Stopwatch.StartNew();
-        a().Wait();
+        await a();
         return stopwatch.Elapsed;
     }
 

@@ -17,13 +17,14 @@ public class FileSystemExtensionsTests
     public async Task EnsureDirectoryIsEmpty()
     {
         var testDir = CreateTestDirectory();
-        await ChildProcess.Run("git.exe", new[] { "init", testDir });
+        await ChildProcess.Run("git", new[] { "init", testDir });
         Assert.That(testDir.EnumerateFileSystemEntries().Any());
         testDir.EnsureDirectoryIsEmpty();
         Assert.That(testDir.EnumerateFileSystemEntries().Any(), Is.Not.True);
     }
 
     [Test]
+    [Platform("Windows")]
     public async Task MoveToRecyclingBin()
     {
         var testDir = CreateTestDirectory();
@@ -84,6 +85,7 @@ public class FileSystemExtensionsTests
     }
 
     [Test]
+    [Platform("Windows")]
     public void Combine()
     {
         var combined = @"C:\temp\a\b\c";
@@ -155,9 +157,8 @@ public class FileSystemExtensionsTests
 
         var dest = testDir.Combine("dest");
 
-        var time = Enumerable.Range(0, 3)
-            .Select(_ => MeasureTime(() => source.CopyTree(dest, useHardlinks: useHardlinks)))
-            .ToList();
+        var time = await Task.WhenAll(Enumerable.Range(0, 3)
+            .Select(_ => MeasureTime(() => source.CopyTree(dest, useHardlinks: useHardlinks))));
         Logger.Information("{0}", time.Select(_ => new { _.TotalSeconds }).ToTable());
         var sourceVersion = (await FileVersion.Get(source))!;
         var destVersion = (await FileVersion.Get(dest))!;
@@ -176,15 +177,15 @@ public class FileSystemExtensionsTests
 
         await SetupFile(source);
 
-        var time = Enumerable.Range(0, 3)
-            .Select(_ => MeasureTime(() => source.CopyTree(dest, useHardlinks: useHardlinks)))
-            .ToList();
+        var time = await Task.WhenAll(Enumerable.Range(0, 3)
+            .Select(_ => MeasureTime(() => source.CopyTree(dest, useHardlinks: useHardlinks))));
 
         Logger.Information("{0}", time.Select(_ => new { _.TotalSeconds }).ToTable());
         Assert.That(await source.IsContentEqual(dest));
     }
 
     [Test]
+    [Platform("Windows")]
     public async Task Hardlinks()
     {
         var testDir = CreateTestDirectory();

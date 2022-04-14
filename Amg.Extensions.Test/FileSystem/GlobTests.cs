@@ -63,6 +63,7 @@ subdirectories match.
     }
 
     [Test]
+    [Platform("Windows")]
     public void ExcludeSubPaths()
     {
         AssertSequencesAreEqual(
@@ -99,7 +100,7 @@ subdirectories match.
             TestDir.Glob("**/c"),
             new[]
             {
-                    TestDir.Combine("a\\b\\c")
+                    TestDir.Combine("a", "b", "c")
             });
     }
 

@@ -504,11 +504,8 @@ are more recent.
         }
     }
 
-    static readonly char[] invalidCharacters = Path.GetInvalidFileNameChars();
     const int maxFileNameLength = 255;
-    static readonly Regex invalidFileNameCharactersPattern = new Regex("(" +
-        invalidCharacters.Select(_ => Regex.Escape(new string(_, 1))).Join("|")
-        + ")");
+    static readonly Regex invalidFileNameCharactersPattern = new Regex("[^A–Za–z0–9._-]");
 
     /// <summary>
     /// true, if x is a valid file name 
@@ -517,7 +514,7 @@ are more recent.
     /// <returns></returns>
     public static bool IsValidFileName(this string x)
     {
-        return (x.IndexOfAny(invalidCharacters) < 0) && (x.Length <= maxFileNameLength);
+        return (x.Length <= maxFileNameLength) && !invalidFileNameCharactersPattern.IsMatch(x);
     }
 
     public static string ToFileName(this DateTime time)
@@ -558,10 +555,7 @@ are more recent.
     /// <returns></returns>
     public static string MakeValidFileName(this string x)
     {
-        if (x.IndexOfAny(invalidCharacters) >= 0)
-        {
-            x = invalidFileNameCharactersPattern.Replace(x, "_");
-        }
+        x = invalidFileNameCharactersPattern.Replace(x, "_");
 
         if (x.Length > maxFileNameLength)
         {

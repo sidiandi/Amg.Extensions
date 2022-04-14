@@ -8,7 +8,7 @@ namespace Amg.Extensions;
 /// <summary>
 /// Extensions for IEnumerable
 /// </summary>
-static class EnumerableExtensions
+public static class EnumerableExtensions
 {
     private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
 

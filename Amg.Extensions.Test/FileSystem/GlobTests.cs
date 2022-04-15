@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using System.IO;
 using Amg.Extensions;
 
 namespace Amg.FileSystem;

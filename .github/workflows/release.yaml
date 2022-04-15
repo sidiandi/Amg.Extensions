@@ -27,6 +27,8 @@ jobs:
       run: dotnet test --configuration Release /p:Version=${VERSION} --no-build
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
+    - name: Nuget Help
+      run: nuget push -help
     - name: Push
       run: nuget push Amg.Extensions.${VERSION}.nupkg -Source https://api.nuget.org/v3/index.json  -Verbosity detailed -ApiKey ${ApiKey}
       env:

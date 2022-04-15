@@ -45,8 +45,8 @@ subdirectories match.
             {
                     TestDir.Combine("a"),
                     TestDir.Combine("hello.txt"),
-                    TestDir.Combine(@"a\b"),
-                    TestDir.Combine(@"a\b\c")
+                    TestDir.Combine("a", "b"),
+                    TestDir.Combine("a", "b", "c")
             });
     }
 

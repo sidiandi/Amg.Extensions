@@ -133,7 +133,7 @@ public static class ChildProcess
         var output = ReadAndPrint($"{process.Id}:1>", process.StandardOutput);
         var error = ReadAndPrint($"{process.Id}:2>", process.StandardError);
 
-        await Task.WhenAll(output, error);
+        await Task.WhenAll(output, error, process.WaitForExitAsync());
 
         Logger.Information("Process {id} ended with exit code {exitCode}.", process.Id, process.ExitCode);
 

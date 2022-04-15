@@ -1,8 +1,10 @@
-﻿using Amg.OnceImpl.Example;
+﻿using Amg.FileSystem;
+using Amg.OnceImpl.Example;
 using Serilog;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace Amg.OnceImpl;
 
@@ -113,7 +115,7 @@ public class OnceTests
         public async virtual Task<long> Size()
         {
             var files = GetFiles(Path.GetTempPath());
-            var files2 = GetFiles(@"C:\temp");
+            var files2 = GetFiles(Assembly.GetExecutingAssembly().Location.Parent());
             return (await files).Concat((await files2)).Sum(_ => _);
         }
     }

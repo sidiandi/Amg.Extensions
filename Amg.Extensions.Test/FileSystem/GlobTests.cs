@@ -85,14 +85,6 @@ subdirectories match.
     }
 
     [Test]
-    public void ExcludeFunc()
-    {
-        var g = new Glob(@"C:\temp");
-        var f = g.ExcludeFuncFromWildcard("a/b");
-        Assert.That(f(new FileInfo(@"C:\temp\a\b")));
-    }
-
-    [Test]
     public void FindFileRecursive()
     {
         AssertSequencesAreEqual(

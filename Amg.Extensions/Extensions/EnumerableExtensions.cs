@@ -567,6 +567,7 @@ where TFirst : class
             }
         }
     }
+
     public static IEnumerable<Y> SafeSelect<X, Y>(this IEnumerable<X> e, Func<X, Y> f)
     {
         foreach (var x in e)

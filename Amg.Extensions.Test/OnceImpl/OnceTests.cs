@@ -1,4 +1,5 @@
-﻿using Amg.FileSystem;
+﻿using Amg.Extensions;
+using Amg.FileSystem;
 using Amg.OnceImpl.Example;
 using Serilog;
 using System.Collections.Generic;
@@ -109,7 +110,7 @@ public class OnceTests
         public virtual Task<IEnumerable<long>> GetFiles(string dir) => Task.Factory.StartNew(() =>
         {
             return new DirectoryInfo(dir).EnumerateFileSystemInfos("*.*", SearchOption.AllDirectories)
-            .Select(_ => (_ as FileInfo)?.Length ?? 0);
+                .SafeSelect(_ => (_ as FileInfo)?.Length ?? 0);
         });
 
         public async virtual Task<long> Size()
@@ -119,7 +120,6 @@ public class OnceTests
             return (await files).Concat((await files2)).Sum(_ => _);
         }
     }
-
 
     [Test]
     public async Task Cached()

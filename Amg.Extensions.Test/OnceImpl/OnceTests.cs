@@ -109,16 +109,17 @@ public class OnceTests
     public class CachedExample
     {
         [Cached]
-        public virtual Task<IEnumerable<long>> GetFiles(string dir) => Task.Factory.StartNew(() =>
+        public virtual Task<IEnumerable<long>> GetFileSizes(string dir) => Task.Factory.StartNew(() =>
         {
+            Logger.Information("GetFileSizes: {dir}", dir);
             return new DirectoryInfo(dir).EnumerateFileSystemInfos("*.*", SearchOption.AllDirectories)
                 .SafeSelect(_ => (_ as FileInfo)?.Length ?? 0);
         });
 
         public async virtual Task<long> Size()
         {
-            var files = GetFiles(Assembly.GetExecutingAssembly().Location.Parent());
-            var files2 = GetFiles(Assembly.GetExecutingAssembly().Location.Parent());
+            var files = GetFileSizes(Assembly.GetExecutingAssembly().Location.Parent());
+            var files2 = GetFileSizes(Assembly.GetExecutingAssembly().Location.Parent());
             return (await files).Concat((await files2)).Sum(_ => _);
         }
     }

@@ -13,3 +13,6 @@ $version.version | sc version.txt
 git commit -m $tag -a
 git tag $tag
 git push --tags
+
+# show release status page
+explorer https://github.com/sidiandi/Amg.Extensions/actions

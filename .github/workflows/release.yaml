@@ -28,4 +28,6 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
-      run: nuget push Amg.Extensions.${VERSION}.nupkg oy2mvwhokgyrc6sfurjqzjchumga24sudkdhqndtiowyia
+      run: nuget push Amg.Extensions.${VERSION}.nupkg ${ApiKey} -Verbosity detailed
+      env:
+        ApiKey: ${{ secrets.PUSH }}

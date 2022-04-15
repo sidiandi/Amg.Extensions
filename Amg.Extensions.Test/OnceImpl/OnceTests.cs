@@ -12,6 +12,8 @@ namespace Amg.OnceImpl;
 [TestFixture]
 public class OnceTests
 {
+    private static readonly Serilog.ILogger Logger = Logger();
+
     public class MethodIsOnlyCalledOnceTestClass
     {
         public virtual void A()
@@ -115,7 +117,7 @@ public class OnceTests
 
         public async virtual Task<long> Size()
         {
-            var files = GetFiles(Path.GetTempPath());
+            var files = GetFiles(Assembly.GetExecutingAssembly().Location.Parent().Parent());
             var files2 = GetFiles(Assembly.GetExecutingAssembly().Location.Parent());
             return (await files).Concat((await files2)).Sum(_ => _);
         }
@@ -124,6 +126,8 @@ public class OnceTests
     [Test]
     public async Task Cached()
     {
+        var dir = CreateTestDirectory();
+        System.Environment.CurrentDirectory = dir;
         var f = Once.Create<CachedExample>();
         var sw0 = Stopwatch.StartNew();
         var size0 = await f.Size();

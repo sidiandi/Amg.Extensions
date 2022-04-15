@@ -6,8 +6,9 @@ Extensions for .NET 6.
 
 ## To Do
 
-* ChildProcess
+* automated nuget package generation with Github actions
 * Increase test coverage
+* ChildProcess
 
 ## Done
 

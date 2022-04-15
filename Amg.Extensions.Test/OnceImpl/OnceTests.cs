@@ -117,7 +117,7 @@ public class OnceTests
 
         public async virtual Task<long> Size()
         {
-            var files = GetFiles(Assembly.GetExecutingAssembly().Location.Parent().Parent());
+            var files = GetFiles(Assembly.GetExecutingAssembly().Location.Parent());
             var files2 = GetFiles(Assembly.GetExecutingAssembly().Location.Parent());
             return (await files).Concat((await files2)).Sum(_ => _);
         }

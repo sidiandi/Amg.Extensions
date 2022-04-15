@@ -28,6 +28,6 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
-      run: dotnet nuget push Amg.Extensions.${VERSION}.nupkg --source https://nuget.pkg.github.com/sidiandi/index.json --api-key ${GITHUB_TOKEN}
+      run: nuget push Amg.Extensions.${VERSION}.nupkg -ApiKey ${ApiKey} -Source https://api.nuget.org/v3/index.json
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ApiKey: ${{ secrets.PUSH }}

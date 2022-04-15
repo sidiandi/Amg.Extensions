@@ -504,8 +504,38 @@ are more recent.
         }
     }
 
+    static readonly Regex invalidPosixFileNameCharactersPattern = new Regex("[^0-9A-Za-z-._]");
+
+    public static bool IsValidPosixFileName(this string x)
+    {
+        return (x.Length <= maxFileNameLength) && !invalidPosixFileNameCharactersPattern.IsMatch(x);
+    }
+
+    public static string MakeValidPosixFileName(this string x, int maxLength = 250)
+    {
+        x = invalidPosixFileNameCharactersPattern.Replace(x, "_");
+
+        if (x.Length > maxLength)
+        {
+            var e = x.Extension();
+            var maxBaseNameLength = maxLength - e.Length;
+            if (maxBaseNameLength < 4)
+            {
+                x = x.TruncateMd5(maxLength);
+            }
+            else
+            {
+                x = x.FileNameWithoutExtension().TruncateMd5(maxBaseNameLength) + e;
+            }
+        }
+        return x;
+    }
+
+    static readonly char[] invalidCharacters = Path.GetInvalidFileNameChars();
     const int maxFileNameLength = 255;
-    static readonly Regex invalidFileNameCharactersPattern = new Regex("[^A–Za–z0–9._-]");
+    static readonly Regex invalidFileNameCharactersPattern = new Regex("(" +
+        invalidCharacters.Select(_ => Regex.Escape(new string(_, 1))).Join("|")
+        + ")");
 
     /// <summary>
     /// true, if x is a valid file name 
@@ -514,36 +544,22 @@ are more recent.
     /// <returns></returns>
     public static bool IsValidFileName(this string x)
     {
-        return (x.Length <= maxFileNameLength) && !invalidFileNameCharactersPattern.IsMatch(x);
+        return (x.IndexOfAny(invalidCharacters) < 0) && (x.Length <= maxFileNameLength);
     }
 
     public static string ToFileName(this DateTime time)
     {
-        return time.ToString("o").MakeValidFileName();
+        return time.ToString("o").MakeValidPosixFileName();
     }
 
     public static string ToShortFileName(this DateTime time)
     {
-        return BaseConvert(symbols09az, time.Ticks);
+        return time.Ticks.BaseConvert(symbols09az);
     }
 
     readonly static char[] symbols09az = Enumerable.Range('0', '9' - '0' + 1).Concat(Enumerable.Range('A', 'Z' - 'A' + 1))
         .Select(_ => (char)_)
         .ToArray();
-
-    static string BaseConvert(char[] symbols, long x)
-    {
-        var result = new List<char>();
-        var b = symbols.Length;
-        for (int i = 0; i < 12; ++i)
-        {
-            var x1 = x / b;
-            var r = x - b * x1;
-            x = x1;
-            result.Add(symbols[r]);
-        }
-        return new string(((IEnumerable<char>)result).Reverse().ToArray());
-    }
 
     /// <summary>
     /// Calculates a valid file name from x.
@@ -555,7 +571,10 @@ are more recent.
     /// <returns></returns>
     public static string MakeValidFileName(this string x)
     {
-        x = invalidFileNameCharactersPattern.Replace(x, "_");
+        if (x.IndexOfAny(invalidCharacters) >= 0)
+        {
+            x = invalidFileNameCharactersPattern.Replace(x, "_");
+        }
 
         if (x.Length > maxFileNameLength)
         {

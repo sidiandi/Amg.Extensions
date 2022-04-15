@@ -1,4 +1,5 @@
 ﻿using Amg.FileSystem;
+using Serilog;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +10,15 @@ namespace Amg.Test;
 
 public static class TestHelpers
 {
+    public static Serilog.ILogger Logger([CallerFilePath] string? file = null)
+    {
+        Serilog.Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateLogger();
+
+        return Serilog.Log.Logger.ForContext("File", file);
+    }
+
     public static string GetThisFilePath([CallerFilePath] string? path = null) => path!;
 
     public static string CreateTestDirectory([CallerMemberName] string? name = null)

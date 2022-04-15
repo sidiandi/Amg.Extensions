@@ -359,4 +359,18 @@ public static class TextFormatExtensions
     {
         return data.Select(_ => _.ToString("x2")).Join(String.Empty);
     }
+
+    public static string BaseConvert(this long x, char[] symbols)
+    {
+        var result = new List<char>();
+        var b = symbols.Length;
+        for (int i = 0; i < 12; ++i)
+        {
+            var x1 = x / b;
+            var r = x - b * x1;
+            x = x1;
+            result.Add(symbols[r]);
+        }
+        return new string(((IEnumerable<char>)result).Reverse().ToArray());
+    }
 }

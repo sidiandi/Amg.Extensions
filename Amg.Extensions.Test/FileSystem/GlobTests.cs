@@ -63,7 +63,6 @@ subdirectories match.
     }
 
     [Test]
-    [Platform("Windows")]
     public void ExcludeSubPaths()
     {
         AssertSequencesAreEqual(

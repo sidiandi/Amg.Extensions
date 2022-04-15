@@ -11,7 +11,7 @@ namespace Amg.FileSystem;
 [TestFixture]
 public class FileSystemExtensionsTests
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+    private static readonly Serilog.ILogger Logger = Logger();
 
     [Test]
     public async Task EnsureDirectoryIsEmpty()
@@ -24,7 +24,7 @@ public class FileSystemExtensionsTests
     }
 
     [Test]
-    [Platform("Windows")]
+    [Platform("Win")]
     public async Task MoveToRecyclingBin()
     {
         var testDir = CreateTestDirectory();
@@ -85,7 +85,7 @@ public class FileSystemExtensionsTests
     }
 
     [Test]
-    [Platform("Windows")]
+    [Platform("Win")]
     public void Combine()
     {
         var combined = @"C:\temp\a\b\c";
@@ -106,6 +106,7 @@ public class FileSystemExtensionsTests
     }
 
     [Test]
+    [Platform("Win")]
     public void MakeValidFilename()
     {
         Assert.That("x".MakeValidFileName(), Is.EqualTo("x"));
@@ -120,6 +121,31 @@ public class FileSystemExtensionsTests
         Logger.Information("{shortened}", shortened);
         Assert.That(IsValidFilename(shortened));
         Assert.That(shortened.Extension(), Is.EqualTo(tooLong.Extension()));
+    }
+
+    [Test]
+    public void MakeValidPosixFilename()
+    {
+        Assert.That("x".MakeValidFileName(), Is.EqualTo("x"));
+
+        var tooLong = new string('a', 1024) + ".ext";
+        Assert.That(tooLong.IsValidPosixFileName(), Is.False);
+        var shortened = tooLong.MakeValidPosixFileName();
+        Assert.That(shortened.IsValidPosixFileName(), Is.True);
+        Logger.Information("{shortened}", shortened);
+        Assert.That(shortened.Extension(), Is.EqualTo(tooLong.Extension()));
+    }
+
+    [Test]
+    public void MakeShortValidPosixFilename()
+    {
+        var tooLong = "Hello World, this is a slightly too long file name.ext";
+        var maxLength = 16;
+        var s = tooLong.MakeValidPosixFileName(maxLength);
+        Assert.That(s.IsValidPosixFileName());
+        Assert.That(s.Length, Is.EqualTo(maxLength));
+        Assert.That(s, Is.EqualTo("a54da7b29720.ext"));
+        Logger.Information("{shortened}", s);
     }
 
     [Test]
@@ -185,7 +211,7 @@ public class FileSystemExtensionsTests
     }
 
     [Test]
-    [Platform("Windows")]
+    [Platform("Win")]
     public async Task Hardlinks()
     {
         var testDir = CreateTestDirectory();

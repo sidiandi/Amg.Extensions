@@ -76,7 +76,10 @@ namespace Amg.Extensions
             if (x.Length > maxLength)
             {
                 var md5 = x.Md5Checksum();
-                return x.Truncate(maxLength - md5.Length) + md5;
+                var unchangedLength = maxLength - md5.Length;
+                return (unchangedLength > 0)
+                    ? x.Truncate(unchangedLength) + md5
+                    : md5.Truncate(maxLength);
             }
             else
             {

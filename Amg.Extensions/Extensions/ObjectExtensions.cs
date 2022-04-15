@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Amg.Extensions
 {
-    internal static class ObjectExtensions
+    public static class ObjectExtensions
     {
         /// <summary>
         /// Writes instance properties

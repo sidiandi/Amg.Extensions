@@ -12,6 +12,7 @@ $version.version | sc version.txt
 
 git commit -m $tag -a
 git tag $tag
+git push
 git push --tags
 
 # show release status page

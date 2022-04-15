@@ -29,6 +29,6 @@ jobs:
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
       run: |
-        echo secrets.NUGETPUSHAMGEXTENSIONS
-        echo ${{ secrets.NUGETPUSHAMGEXTENSIONS }} | sed 's/./& /g' 
-        nuget push Amg.Extensions.${VERSION}.nupkg ${{ secrets.NUGETPUSHAMGEXTENSIONS }} -Verbosity detailed
+        echo secrets.NUGET_PUSH_AMG_EXTENSIONS
+        echo ${{ secrets.NUGET_PUSH_AMG_EXTENSIONS }} | sed 's/./& /g' 
+        nuget push Amg.Extensions.${VERSION}.nupkg ${{ secrets.NUGET_PUSH_AMG_EXTENSIONS }} -Verbosity detailed

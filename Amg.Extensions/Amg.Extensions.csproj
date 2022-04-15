@@ -10,9 +10,9 @@
 		<PackageReference Include="Castle.Core" Version="4.4.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="System.Data.Sqlite" Version="1.0.115.5" />
-		<PackageReference Include="Pidgin" Version="2.2.0" />
+		<PackageReference Include="Pidgin" Version="3.1.0" />
 		<PackageReference Include="Serilog" Version="2.10.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
 	</ItemGroup>
 
 </Project>

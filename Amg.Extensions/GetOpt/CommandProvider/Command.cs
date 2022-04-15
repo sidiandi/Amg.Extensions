@@ -64,13 +64,13 @@ namespace Amg.GetOpt
                     catch (TargetInvocationException targetInvocationException)
                     {
                         var inner = targetInvocationException.InnerException?.InnerException;
-                        if (inner is { })
+                        if (inner is null)
                         {
-                            throw inner;
+                            throw;
                         }
                         else
                         {
-                            throw;
+                            throw inner;
                         }
                     }
                 });

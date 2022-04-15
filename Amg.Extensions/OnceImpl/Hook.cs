@@ -28,7 +28,9 @@ internal class Hook : IProxyGenerationHook
         var fields = type.GetFields(
             BindingFlags.Instance |
             BindingFlags.Public |
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
             BindingFlags.NonPublic);
+#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
 
         var mutableFields = fields.Where(
             f => !f.IsInitOnly &&
@@ -47,7 +49,9 @@ Following fields are not readonly:
         var properties = type.GetProperties(
             BindingFlags.Instance |
             BindingFlags.Public |
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
             BindingFlags.NonPublic);
+#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
 
         var unsuitableProperties = properties.Where(f => f.CanWrite && (f.GetMethod is { }  && !f.GetMethod.IsVirtual));
 

@@ -383,7 +383,10 @@ public class FileSystemExtensionsTests
     public void CurrentDirectoryToCanonical()
     {
         var c = ".".Canonical();
-        Assert.That(c.EqualsPath(System.Environment.CurrentDirectory));
+        var currentDirectory = System.Environment.CurrentDirectory;
+        Assert.That(c.EqualsPath(currentDirectory), () =>
+            $"c={c}, currentDirectory={currentDirectory}"
+        );
     }
 
     [Test]

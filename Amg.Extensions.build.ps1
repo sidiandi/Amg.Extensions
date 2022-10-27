@@ -100,5 +100,10 @@ task release-patch {
 	explorer https://github.com/sidiandi/Amg.Extensions/actions
 }
 
+# Synopsis: open github actions page to check CI build results
+task open-actions {
+	start "https://github.com/sidiandi/Amg.Extensions/actions"
+}
+
 # Synopsis: Default task.
 task . build

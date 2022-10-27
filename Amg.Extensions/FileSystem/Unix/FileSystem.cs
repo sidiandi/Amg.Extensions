@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,12 @@ namespace Amg.FileSystem.Unix;
 
 internal class FileSystem : IFileSystem
 {
+    internal static class NativeMethods
+    {
+        [DllImport("libc.so")]
+        public static extern int link(string oldpath, string newpath);
+    }
+
     public FileSystem()
     {
         PathEqualityComparer = StringComparer.Ordinal;
@@ -20,10 +27,14 @@ internal class FileSystem : IFileSystem
         System.IO.File.Copy(existingFileName, newFileName, options.Overwrite);
     });
 
-    public Task CreateHardLink(string fileName, string existingFileName)
+    public Task CreateHardLink(string fileName, string existingFileName) => Task.Factory.StartNew(() =>
     {
-        throw new NotImplementedException();
-    }
+        var r = NativeMethods.link(existingFileName, fileName);
+        if (r != 0)
+        {
+            throw new System.IO.IOException($"link({existingFileName}, {fileName}): {r}");
+        }
+    });
 
     public Task<IHardLinkInfo> GetHardLinkInfo(string path)
     {

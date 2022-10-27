@@ -380,6 +380,7 @@ public class FileSystemExtensionsTests
     }
 
     [Test]
+    [Platform("Win")]
     public void CurrentDirectoryToCanonical()
     {
         var c = ".".Canonical();

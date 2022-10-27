@@ -121,13 +121,9 @@ public static class PathExtensions
                     r.RemoveAt(r.Count - 1);
                 }
             }
-            else if (i == CurrentDirectoryReference)
+            else if (i == CurrentDirectoryReference || i == String.Empty)
             {
                 // do nothing
-            }
-            else if (i == String.Empty && r.Count == 0)
-            {
-                r.Add(i);
             }
             else
             {

@@ -17,7 +17,7 @@
     <None Include="LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.37.0.45539">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.47.0.55603">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

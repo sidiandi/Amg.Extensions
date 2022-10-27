@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Amg.FileSystem;
 
-interface IFileSystem
+public interface IFileSystem
 {
     /// <summary>
     /// Copy a file.
@@ -13,7 +14,7 @@ interface IFileSystem
     /// <param name="progress">To report progress information back to the caller. Can be null.</param>
     /// <param name="cancellationToken">To cancel the copy operation. When cancelled, the destination file will not exist.</param>
     /// <param name="options">Options for the copy operation.</param>
-    void CopyFile(
+    Task CopyFile(
         string existingFileName,
         string newFileName,
         IProgress<CopyFileProgress>? progress = null,
@@ -25,7 +26,7 @@ interface IFileSystem
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    IHardLinkInfo GetHardLinkInfo(string path);
+    Task<IHardLinkInfo> GetHardLinkInfo(string path);
 
     /// <summary>
     /// Create a new hard link.
@@ -35,5 +36,29 @@ interface IFileSystem
     /// Will throw an exception ? when fileName does not have the same root as existingFileName
     /// <param name="fileName">Path where the new hard link shall be created.</param>
     /// <param name="existingFileName">Existing file for which a hard link will be created.</param>
-    void CreateHardLink(string fileName, string existingFileName);
+    Task CreateHardLink(string fileName, string existingFileName);
+
+    IEqualityComparer<string> PathEqualityComparer { get; init; }
+}
+
+public static class FileSystem
+{
+    static IFileSystem? _current = null;
+
+    public static IFileSystem Current
+    {
+        get
+        {
+            if (_current is null)
+            {
+                _current = System.Environment.OSVersion.Platform switch
+                {
+                    PlatformID.Win32NT => new Windows.FileSystem(),
+                    PlatformID.Unix => new Unix.FileSystem(),
+                    _ => throw new NotSupportedException()
+                };
+            }
+            return _current;
+        }
+    }
 }

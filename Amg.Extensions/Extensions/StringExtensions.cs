@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Amg.Extensions
 {
-    internal static class StringExtensions
+    public static class StringExtensions
     {
         /// <summary>
         /// Replace line breaks by ' '
@@ -145,6 +145,11 @@ namespace Amg.Extensions
             }
         }
 
+        /// <summary>
+        /// returns x with the first letter being upper case and the rest lower case. wOrD => Word
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public static string Word(string x)
         {
             if (x.Length == 0)

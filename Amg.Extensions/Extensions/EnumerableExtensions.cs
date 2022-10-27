@@ -10,7 +10,7 @@ namespace Amg.Extensions;
 /// </summary>
 public static class EnumerableExtensions
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 
     /// <summary>
     /// Concat one (1) new element
@@ -426,6 +426,11 @@ public static class EnumerableExtensions
     public static bool StartsWith<T>(this IEnumerable<T> e, IEnumerable<T> start)
     {
         return start.ZipPadSecond(e, (i1, i2) => object.Equals(i1, i2)).All(_ => _);
+    }
+
+    public static bool StartsWith<T>(this IEnumerable<T> e, IEnumerable<T> start, IEqualityComparer<T> equalityComparer)
+    {
+        return start.ZipPadSecond(e, (i1, i2) => equalityComparer.Equals(i1, i2)).All(_ => _);
     }
 
     public static int IndexOf<T>(this IEnumerable<T> e, T searchValue)

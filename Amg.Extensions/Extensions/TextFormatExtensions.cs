@@ -28,10 +28,7 @@ public static class TextFormatExtensions
     /// </summary>
     /// <param name="x"></param>
     /// <returns></returns>
-    public static string Quote(this string x)
-    {
-        return "\"" + x.Replace("\"", "\\\"") + "\"";
-    }
+    public static string Quote(this string x) => x.Quote("\"", "\"", "\\");
 
     /// <summary>
     /// Quotes a string.

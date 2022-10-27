@@ -183,9 +183,7 @@ public class FileSystemExtensionsTests
 
         var dest = testDir.Combine("dest");
 
-        var time = await Task.WhenAll(Enumerable.Range(0, 3)
-            .Select(_ => MeasureTime(() => source.CopyTree(dest, useHardlinks: useHardlinks))));
-        Logger.Information("{0}", time.Select(_ => new { _.TotalSeconds }).ToTable());
+        await source.CopyTree(dest, useHardlinks: useHardlinks);
         var sourceVersion = (await FileVersion.Get(source))!;
         var destVersion = (await FileVersion.Get(dest))!;
         destVersion.Name = sourceVersion.Name;
@@ -196,17 +194,12 @@ public class FileSystemExtensionsTests
     public async Task CopyTreeSingleFile(bool useHardlinks)
     {
         var testDir = CreateTestDirectory();
-        Logger.Information(testDir);
         var source = testDir.Combine("source");
-
         var dest = testDir.Combine("dest");
-
         await SetupFile(source);
 
-        var time = await Task.WhenAll(Enumerable.Range(0, 3)
-            .Select(_ => MeasureTime(() => source.CopyTree(dest, useHardlinks: useHardlinks))));
+        await source.CopyTree(dest, useHardlinks);
 
-        Logger.Information("{0}", time.Select(_ => new { _.TotalSeconds }).ToTable());
         Assert.That(await source.IsContentEqual(dest));
     }
 
@@ -219,15 +212,15 @@ public class FileSystemExtensionsTests
             testDir.Combine("original.txt")
             .WriteAllTextAsync("hello");
 
-        var dest = source.CreateHardlink(testDir.Combine("copy.txt"));
+        var dest = await source.CreateHardlink(testDir.Combine("copy.txt"));
 
         Assert.That(dest.IsFile());
 
-        var info = dest.HardlinkInfo();
+        var info = await dest.HardlinkInfo();
         Assert.That(info.HardLinks.Count(), Is.EqualTo(2));
 
         source.EnsureFileNotExists();
-        info = dest.HardlinkInfo();
+        info = await dest.HardlinkInfo();
         Assert.That(info.HardLinks.SequenceEqual(new[] { dest }));
     }
 
@@ -236,6 +229,24 @@ public class FileSystemExtensionsTests
     {
         var p = @"C:\temp\some\long\path\with\directories\hello.txt";
         Assert.AreEqual(p, p.SplitDirectories().CombineDirectories());
+    }
+
+    [Test]
+    public void SplitDirectoriesUnc()
+    {
+        var p = @"\\server\share$\some\long\path\with\directories\hello.txt";
+        var d = p.SplitDirectories();
+        Assert.That(d[0], Is.EqualTo(@"\\server\share$"));
+        Assert.AreEqual(p, d.CombineDirectories());
+    }
+
+    [Test]
+    [TestCase(@"C:\a\b\c", false)]
+    [TestCase(@"\\server\share\a\b\c", true)]
+    [TestCase(@"\\?\C:\File", false)]
+    public void IsUnc(string path, bool isUnc)
+    {
+        Assert.That(path.IsUnc(), Is.EqualTo(isUnc));
     }
 
     [Test]
@@ -259,6 +270,23 @@ public class FileSystemExtensionsTests
         fn = time.ToShortFileName();
         Assert.That(fn.IsValidFileName());
         Assert.AreEqual("NZ14HU5JI7ZZ", fn);
+    }
+
+    [Test]
+    public void PathEqualsIsCaseSensitiveDependingOnOsPlaform()
+    {
+        if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
+        {
+            Assert.That(@"A.TXT".EqualsPath("a.txt"));
+        }
+        else if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
+        {
+            Assert.That(!@"A.TXT".EqualsPath("a.txt"));
+        }
+        else
+        {
+            Assert.Fail();
+        }
     }
 
     [Test]
@@ -288,9 +316,72 @@ public class FileSystemExtensionsTests
     [Test]
     public void RelativeTo()
     {
+        var b = @"C:\a\b\c";
+        var p = b.Combine("d", "e", "f");
+        var r = p.RelativeTo(b);
+        Assert.That(b.Combine(r), Is.EqualTo(p));
+    }
+
+    [Test]
+    public void RelativeToIsCaseInsensitiveOnWindows()
+    {
+        if (System.Environment.OSVersion.Platform != PlatformID.Win32NT) Assert.Pass();
+
         var d = @"C:\a\b\c";
-        var f = d.Combine("d", "e", "f");
-        Assert.That(d.Combine(f.RelativeTo(d)), Is.EqualTo(f));
+        var f = @"C:\A\b\c\d\e\f";
+        Assert.That(f.RelativeTo(d), Is.EqualTo(@"d\e\f"));
+    }
+
+    [Test]
+    public void RelativeToWithDots()
+    {
+        if (System.Environment.OSVersion.Platform != PlatformID.Win32NT) Assert.Pass();
+
+        var d = @"C:\a\b\c";
+        var f = @"C:\a\g\h\i\j";
+        Assert.That(f.RelativeTo(d), Is.EqualTo(@"..\..\g\h\i\j"));
+    }
+
+    [Test]
+    public void RelativeTrailingSlash()
+    {
+        if (System.Environment.OSVersion.Platform != PlatformID.Win32NT) Assert.Pass();
+
+        var b = @"C:\a\b\c\";
+        var f = @"C:\a\g\h\i\j";
+        var r = f.RelativeTo(b);
+        Assert.That(b.Combine(r).Canonical(), Is.EqualTo(f));
+        Assert.That(f.RelativeTo(b), Is.EqualTo(@"..\..\g\h\i\j"));
+    }
+
+    [Test]
+    public void RelativeToWithDots2()
+    {
+        if (System.Environment.OSVersion.Platform != PlatformID.Win32NT) Assert.Pass();
+
+        var d = @"\\server\share\a\b\c";
+        var f = @"\\server\othershare\j";
+        Assert.Throws<System.ArgumentOutOfRangeException>(() => f.RelativeTo(d));
+    }
+
+    [Test]
+    [TestCase(@"C:\", @"C:\")]
+    [TestCase(@"C:\a\b\c\", @"C:\a\b\c")]
+    [TestCase(@"C:\a\b\c\.", @"C:\a\b\c")]
+    [TestCase(@"C:\a\b\c\d\..\.", @"C:\a\b\c")]
+    [TestCase(@"C:\a\b\c\d\..\.", @"C:\a\b\c")]
+    [TestCase(@"C:\a\b\c\d\..\..\..\f", @"C:\a\f")]
+    [TestCase(@"\\server\share$\a\b\c\d\", @"\\server\share$\a\b\c\d")]
+    public void Canonical(string path, string expectedCanonicalPath)
+    {
+        Assert.That(path.Canonical(), Is.EqualTo(expectedCanonicalPath));
+    }
+
+    [Test]
+    public void CurrentDirectoryToCanonical()
+    {
+        var c = ".".Canonical();
+        Assert.That(c.EqualsPath(System.Environment.CurrentDirectory));
     }
 
     [Test]
@@ -306,7 +397,7 @@ public class FileSystemExtensionsTests
     }
 
     [Test]
-    public async Task Split()
+    public async Task SplitFile()
     {
         var testDir = CreateTestDirectory();
         var count = 100;

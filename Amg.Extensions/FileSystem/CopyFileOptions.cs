@@ -1,6 +1,6 @@
 ﻿namespace Amg.FileSystem;
 
-class CopyFileOptions
+public class CopyFileOptions
 {
     public bool AllowDecryptedDestination { get; set; }
     public bool CopySymlink { get; set; }

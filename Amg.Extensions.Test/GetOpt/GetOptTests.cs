@@ -129,6 +129,7 @@ Options:
         });
         Console.WriteLine(output);
         Assert.That(!output.Contains("do-something"));
+        Assert.That(error, Is.EqualTo(String.Empty));
     }
 
     [Test]
@@ -140,6 +141,7 @@ Options:
         {
             exitCode = GetOpt.Main(new string[] { "1", "1" }, o);
         });
+        Console.WriteLine(output);
         Console.WriteLine(error);
         Assert.AreEqual(ExitCode.CommandLineError, exitCode);
     }

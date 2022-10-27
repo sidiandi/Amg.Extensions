@@ -5,7 +5,7 @@ namespace Amg.FileSystem;
 
 sealed class BackupDirectory : IBackup
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 
     private readonly string directory;
     private readonly string backupDirectory;

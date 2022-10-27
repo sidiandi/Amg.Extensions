@@ -1,4 +1,5 @@
-﻿using Amg.FileSystem;
+﻿using Amg.Extensions;
+using Amg.FileSystem;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,14 +14,14 @@ namespace Amg.FileSystem;
 
 public static class ChildProcess
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 
     /// <summary>
     /// Quote only if x contains whitespace.
     /// </summary>
     /// <param name="x"></param>
     /// <returns></returns>
-    public static string QuoteIfRequired(this string x)
+    public static string QuoteIfRequired(string x)
     {
         if (string.IsNullOrEmpty(x)) return "\"\"";
         return x.Any(char.IsWhiteSpace)
@@ -34,7 +35,7 @@ public static class ChildProcess
     /// <param name="x"></param>
     /// <param name="quotes">leading quote, trailing quote and escape character. Example: "[]\\" </param>
     /// <returns></returns>
-    public static string Quote(this string x, string leadingQuote, string trailingQuote, string? escape = null)
+    public static string Quote(string x, string leadingQuote, string trailingQuote, string? escape = null)
     {
         if (escape is { })
         {
@@ -49,10 +50,7 @@ public static class ChildProcess
     /// </summary>
     /// <param name="x"></param>
     /// <returns></returns>
-    public static string Quote(this string x)
-    {
-        return "\"" + x.Replace("\"", "\\\"") + "\"";
-    }
+    public static string Quote(string x) => TextFormatExtensions.Quote(x, "\"", "\"", "\\");
 
     /// <summary>
     /// Creates an argument string for Process.StartInfo.Arguments
@@ -96,10 +94,15 @@ public static class ChildProcess
         return s;
     }
 
-    public static string PsQuote(this string x)
+    /// <summary>
+    /// Quote a string with ' ' to be used in a powershell command
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static string PsQuote(string x)
     {
         const string quote = "'";
-        return quote + x.Replace(quote, quote + quote) + quote;
+        return TextFormatExtensions.Quote(x, quote, quote, quote);
     }
 
     public static async Task<Result> Run(

@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Amg.FileSystem.Windows;
 
 class HardLinkInfo : IHardLinkInfo
 {
-    public static HardLinkInfo Get(string path)
-    {
-        return new HardLinkInfo(path);
-    }
+    public static Task<HardLinkInfo> Get(string path) 
+        => Task.FromResult(new HardLinkInfo(path));
 
     HardLinkInfo(string path)
     {

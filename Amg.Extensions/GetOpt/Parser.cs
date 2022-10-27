@@ -8,7 +8,7 @@ namespace Amg.GetOpt;
 
 public class Parser
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 
     private readonly ICommandProvider commandProvider;
     private readonly ValueParser valueParser = new ValueParser();

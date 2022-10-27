@@ -3,6 +3,7 @@ using Serilog;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -21,9 +22,51 @@ public static class TestHelpers
 
     public static string GetThisFilePath([CallerFilePath] string? path = null) => path!;
 
+    /// <summary>
+    /// Create an empty directory to read and write to during a single test. Previous test output will be deleted.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public static string CreateTestDirectory([CallerMemberName] string? name = null)
     {
-        return GetThisFilePath().Parent().Combine("out", "test", name!).EnsureDirectoryIsEmpty();
+        return Assembly.GetExecutingAssembly()
+            .Directory()
+            .Combine("test", name!).EnsureDirectoryIsEmpty();
+    }
+
+    /// <summary>
+    /// Create a directory to read and write to during a single test. Previous test output will be kept.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public static string CreatePersistentTestDirectory([CallerMemberName] string? name = null)
+    {
+        return Assembly.GetExecutingAssembly()
+            .Directory()
+            .Combine("test.p", name!).EnsureDirectoryExists();
+    }
+
+    public static void Dump<T>(IEnumerable<T> e)
+    {
+        foreach (var i in e)
+        {
+            Console.WriteLine(i);
+        }
+    }
+
+    /// <summary>
+    /// Access static test data which is stored in the "test-data" directory in the source tree.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="System.IO.DirectoryNotFoundException"></exception>
+    public static string GetTestDataDirectory()
+    {
+        var d = Assembly.GetCallingAssembly().Location.Parent().Combine("test-data");
+        if (!d.IsDirectory())
+        {
+            throw new System.IO.DirectoryNotFoundException(d);
+        }
+        return d;
     }
 
     public static TimeSpan MeasureTime(Action a)

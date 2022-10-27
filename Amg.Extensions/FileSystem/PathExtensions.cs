@@ -16,7 +16,7 @@ namespace Amg.FileSystem;
 /// For examples, see Amg.Build.Tests/FileSystemExtensionsTests.cs
 public static class PathExtensions
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 
     /// <summary>
     /// Creates the parent directory of path is necessary. 
@@ -108,6 +108,40 @@ public static class PathExtensions
         return Path.GetFullPath(path);
     }
 
+    public static string Canonical(this string path)
+    {
+        var p = path.Absolute().SplitDirectories();
+        var r = new List<string>();
+        foreach (var i in p)
+        {
+            if (i == ParentDirectoryReference)
+            {
+                if (r.Count > 0)
+                {
+                    r.RemoveAt(r.Count - 1);
+                }
+            }
+            else if (i == CurrentDirectoryReference || i == String.Empty)
+            {
+                // do nothing
+            }
+            else
+            {
+                r.Add(i);
+            }
+        }
+        var canonicalPath = Path.Combine(r.ToArray());
+        if (r.Count == 1 && r[0].EndsWith(DriveLetterSeparator))
+        {
+            canonicalPath = canonicalPath.EnsureTrailingDirectorySeparator();
+        }
+        return canonicalPath;
+    }
+
+    const char DriveLetterSeparator = ':';
+    const string CurrentDirectoryReference = ".";
+    const string ParentDirectoryReference = "..";
+
     /// <summary>
     /// Returns true if path has any of the extensions `extensionWithDots`. Ignores case.
     /// </summary>
@@ -117,7 +151,8 @@ public static class PathExtensions
     public static bool HasExtension(this string path, params string[] extensionsWithDots)
     {
         var e = path.Extension();
-        return extensionsWithDots.Any(_ => _.Equals(e, StringComparison.OrdinalIgnoreCase));
+        var equalityComparer = FileSystem.Current.PathEqualityComparer;
+        return extensionsWithDots.Any(_ => equalityComparer.Equals(_, e));
     }
 
     /// <summary>
@@ -207,6 +242,24 @@ public static class PathExtensions
         else
         {
             return path;
+        }
+    }
+
+    public static string EnsureTrailingDirectorySeparator(this string path)
+    {
+        if (path.Length == 0)
+        {
+            return path;
+        }
+        var last = path[path.Length - 1];
+
+        if (last == Path.DirectorySeparatorChar || last == Path.AltDirectorySeparatorChar)
+        {
+            return path;
+        }
+        else
+        {
+            return path + Path.DirectorySeparatorChar;
         }
     }
 
@@ -453,9 +506,30 @@ are more recent.
             return new string[] { };
         }
 
+        if (path.IsUnc())
+        {
+            // unc path
+            var p = path.Split(Path.DirectorySeparatorChar);
+            return new[] { p.Take(4).Join(@"\") }.Concat(p.Skip(4)).ToArray();
+        }
+
         path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         return path.Split(Path.DirectorySeparatorChar);
     }
+
+    /// <summary>
+    /// Returns true if path follows the Universal Naming Convention (UNC)
+    /// </summary>
+    /// https://en.wikipedia.org/wiki/Path_(computing)#Universal_Naming_Convention
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static bool IsUnc(this string path)
+    {
+        return path.StartsWith(UncPrefix) && !path.StartsWith(LongPathPrefix);
+    }
+
+    const string UncPrefix = @"\\";
+    const string LongPathPrefix = @"\\?";
 
     /// <summary>
     /// Combine directory parts into path
@@ -607,7 +681,7 @@ are more recent.
         bool overwrite = true)
     {
         var copyFile = useHardlinks
-            ? new Func<FileInfo, string, Task>((s, d) => CopyHardlink(s, d))
+            ? new Func<FileInfo, string, Task>((s, d) => CopyHardlink(s, d, overwrite))
             : new Func<FileInfo, string, Task>((s, d) => CopyFile(s, d, overwrite));
 
         try
@@ -675,7 +749,7 @@ are more recent.
         return await Task.FromResult(dest);
     }
 
-    static async Task<string> CopyHardlink(FileInfo source, string dest)
+    static async Task<string> CopyHardlink(FileInfo source, string dest, bool overwrite)
     {
         // do we need to copy at all?
         if (dest.Info() is FileInfo destInfo && CanSkip(source, destInfo))
@@ -686,12 +760,25 @@ are more recent.
         // parent directory of dest could not exist. Retry once.
         try
         {
-            source.FullName.CreateHardlink(dest);
+            await source.FullName.CreateHardlink(dest);
         }
         catch (System.IO.DirectoryNotFoundException)
         {
             dest.EnsureParentDirectoryExists();
-            source.FullName.CreateHardlink(dest);
+            await source.FullName.CreateHardlink(dest);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            if (overwrite)
+            {
+                dest.EnsureFileNotExists();
+                await source.FullName.CreateHardlink(dest);
+            }
+            else
+            {
+                throw;
+            }
         }
 
         return await Task.FromResult(dest);
@@ -716,17 +803,15 @@ are more recent.
         }
     }
 
-    static IFileSystem FileSystem { get; } = new Windows.FileSystem();
-
     /// <summary>
     /// Create a file system hard link
     /// </summary>
     /// <param name="path"></param>
     /// <param name="linkPath"></param>
     /// <returns></returns>
-    public static string CreateHardlink(this string path, string linkPath)
+    public static async Task<string> CreateHardlink(this string path, string linkPath)
     {
-        FileSystem.CreateHardLink(linkPath, path);
+        await FileSystem.Current.CreateHardLink(linkPath, path);
         return linkPath;
     }
 
@@ -735,10 +820,8 @@ are more recent.
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static IHardLinkInfo HardlinkInfo(this string path)
-    {
-        return FileSystem.GetHardLinkInfo(path);
-    }
+    public static Task<IHardLinkInfo> HardlinkInfo(this string path) 
+        => FileSystem.Current.GetHardLinkInfo(path);
 
     /// <summary>
     /// Make sure that path does not exist, no matter if directory or file
@@ -763,43 +846,6 @@ are more recent.
             Directory.Delete(path);
         }
         return path;
-    }
-
-    /// <summary>
-    /// Gets the ProgramData directory for type
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static string GetProgramDataDirectory(this System.Type type)
-    {
-        var assembly = type.Assembly;
-        return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).Combine(new[]
-        {
-                assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company,
-                assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
-                type.Name
-            }.Where(_ => !String.IsNullOrEmpty(_))
-        .NotNull()
-        .ToArray());
-    }
-
-    /// <summary>
-    /// Gets the ProgramData directory for type
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static string GetProgramDataDirectory(this Assembly assembly)
-    {
-        var p = new[]
-        {
-                assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company,
-                assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
-                assembly.GetName().Name
-            }
-        .NotNull()
-        .Select(_ => _.MakeValidFileName());
-
-        return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).Combine(p.ToArray());
     }
 
     /// <summary>
@@ -911,6 +957,9 @@ are more recent.
         }
     });
 
+    public static bool EqualsPath(this string path0, string path1)
+        => FileSystem.Current.PathEqualityComparer.Equals(path0, path1);
+
     /// <summary>
     /// Reads 2 files to the end and compares for equality
     /// </summary>
@@ -978,16 +1027,22 @@ are more recent.
 
     public static string RelativeTo(this string path, string relativeTo)
     {
-        var p = path.SplitDirectories();
-        var r = relativeTo.SplitDirectories();
-        if (p.StartsWith(r))
+        var b = relativeTo.Absolute().RemoveTrailingDirectorySeparator().SplitDirectories().ToList();
+        var p = path.Absolute().RemoveTrailingDirectorySeparator().SplitDirectories().ToList();
+
+        var equality = FileSystem.Current.PathEqualityComparer;
+        var result = new List<string>();
+        while (!p.StartsWith(b, equality))
         {
-            return Path.Combine(p.Skip(r.Count()).ToArray());
+            if (b.Count == 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(path), path, $"no relative path from {relativeTo}");
+            }
+            b.RemoveAt(b.Count - 1);
+            result.Add("..");
         }
-        else
-        {
-            throw new ArgumentOutOfRangeException(nameof(path), path, $"must be a child of {relativeTo}");
-        }
+        result.AddRange(p.Skip(b.Count));
+        return Path.Combine(result.ToArray());
     }
 
     public static Task<string> Touch(this string path) => Task.Factory.StartNew(() =>
@@ -1107,5 +1162,47 @@ are more recent.
             }
             return parts;
         }
+    }
+}
+
+public static class AssemblyExtensions
+{
+    public static string Directory(this Assembly assembly) => assembly.Location.Parent();
+
+    /// <summary>
+    /// Gets the ProgramData directory for type
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static string GetProgramDataDirectory(this System.Type type)
+    {
+        var assembly = type.Assembly;
+        return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).Combine(new[]
+        {
+                assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company,
+                assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
+                type.Name
+            }.Where(_ => !String.IsNullOrEmpty(_))
+        .NotNull()
+        .ToArray());
+    }
+
+    /// <summary>
+    /// Gets the ProgramData directory for type
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static string GetProgramDataDirectory(this Assembly assembly)
+    {
+        var p = new[]
+        {
+                assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company,
+                assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
+                assembly.GetName().Name
+            }
+        .NotNull()
+        .Select(_ => _.MakeValidFileName());
+
+        return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).Combine(p.ToArray());
     }
 }

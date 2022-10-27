@@ -2,7 +2,7 @@
 
 namespace Amg.FileSystem;
 
-internal class CopyFileProgress
+public class CopyFileProgress
 {
     public CopyFileProgress(
         DateTime Begin,

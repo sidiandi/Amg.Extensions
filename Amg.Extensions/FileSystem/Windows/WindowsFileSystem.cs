@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Amg.FileSystem.Windows
 {
@@ -8,47 +9,33 @@ namespace Amg.FileSystem.Windows
     /// </summary>
     internal class FileSystem : IFileSystem
     {
-        private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
-
-        public static FileSystem Current
-        {
-            get
-            {
-                if (current == null)
-                {
-                    current = new FileSystem();
-                }
-                return current;
-            }
-        }
-
-        static FileSystem? current = null;
+        private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 
         /// <summary>
         /// Create a hardlink at fileName that points to existingFileName
         /// </summary>
         /// <param name="fileName">Path of the newly created link</param>
         /// <param name="existingFileName">Path of the existing file to which the link will point</param>
-        public void CreateHardLink(string fileName, string existingFileName)
+        public Task CreateHardLink(string fileName, string existingFileName) => Task.Factory.StartNew(() =>
         {
             NativeMethods.CreateHardLink(fileName, existingFileName, IntPtr.Zero)
                 .CheckApiCall($"Cannot create hard link: {fileName} -> {existingFileName}");
-        }
+        });
 
-        public IHardLinkInfo GetHardLinkInfo(string path)
+        public async Task<IHardLinkInfo> GetHardLinkInfo(string path)
         {
-            return HardLinkInfo.Get(path);
+            return await HardLinkInfo.Get(path);
         }
 
         const int ERROR_ALREADY_EXISTS = 183;
         const int ERROR_PATH_NOT_FOUND = 3;
 
-        public void CopyFile(
+        public Task CopyFile(
             string existingFileName,
             string newFileName,
             IProgress<CopyFileProgress>? progress = null,
             CancellationToken cancellationToken = new CancellationToken(),
-            CopyFileOptions? options = null)
+            CopyFileOptions? options = null) => Task.Factory.StartNew(() =>
         {
             Int32 pbCancel = 0;
 
@@ -59,7 +46,7 @@ namespace Amg.FileSystem.Windows
 
             var begin = DateTime.UtcNow;
 
-            var progressCallback = progress != null 
+            var progressCallback = progress != null
                 ? new NativeMethods.CopyProgressRoutine(
                 (
                     long TotalFileSize,
@@ -79,7 +66,7 @@ namespace Amg.FileSystem.Windows
                         TotalBytesTransferred,
                         StreamSize,
                         StreamBytesTransferred,
-                        (int) dwStreamNumber));
+                        (int)dwStreamNumber));
 
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -89,7 +76,7 @@ namespace Amg.FileSystem.Windows
                     {
                         return NativeMethods.CopyProgressResult.PROGRESS_CONTINUE;
                     }
-                }) 
+                })
                 : null;
 
             NativeMethods.CopyFileEx(
@@ -105,6 +92,8 @@ namespace Amg.FileSystem.Windows
                 (options.OpenSourceForWrite ? NativeMethods.CopyFileFlags.COPY_FILE_OPEN_SOURCE_FOR_WRITE : 0) |
                 (options.Restartable ? NativeMethods.CopyFileFlags.COPY_FILE_RESTARTABLE : 0))
                 .CheckApiCall(String.Format("copy from {0} to {1}", existingFileName, newFileName));
-        }
+        }, TaskCreationOptions.LongRunning);
+
+        public IEqualityComparer<string> PathEqualityComparer { get; init; } = StringComparer.OrdinalIgnoreCase;
     }
 }

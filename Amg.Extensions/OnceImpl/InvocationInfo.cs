@@ -6,7 +6,7 @@ namespace Amg.OnceImpl;
 
 partial class InvocationInfo : IInvocation
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 
     private readonly Castle.DynamicProxy.IInvocation? invocation;
     private readonly Interceptor? interceptor;

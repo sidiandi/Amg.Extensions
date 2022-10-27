@@ -9,7 +9,7 @@ namespace Amg.OnceImpl;
 
 internal class CachedInvocationInfo : IInvocation
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType);
+    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 
     public CachedInvocationInfo(Interceptor interceptor, InvocationId id, Castle.DynamicProxy.IInvocation invocation)
     {

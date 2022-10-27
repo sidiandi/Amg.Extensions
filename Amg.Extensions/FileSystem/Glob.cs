@@ -152,13 +152,13 @@ public class Glob : IEnumerable<string>
             return new[] { fileSystemInfo };
         }
 
-        if (!(fileSystemInfo is DirectoryInfo root))
+        if (!(fileSystemInfo is DirectoryInfo dir))
         {
             return Enumerable.Empty<FileSystemInfo>();
         }
 
         // do not follow junction points
-        if ((root.Attributes & FileAttributes.ReparsePoint) != 0)
+        if ((dir.Attributes & FileAttributes.ReparsePoint) != 0)
         {
             return Enumerable.Empty<FileSystemInfo>();
         }
@@ -170,15 +170,15 @@ public class Glob : IEnumerable<string>
         if (IsSkipAnyNumberOfDirectories(first))
         {
             return (leaf
-                ? Find(root, new[] { "*" }, exclude)
-                : Find(root, rest, exclude))
-                .Concat(root.EnumerateDirectories()
+                ? Find(dir, new[] { "*" }, exclude)
+                : Find(dir, rest, exclude))
+                .Concat(dir.EnumerateDirectories()
                 .Where(_ => !exclude(_))
                 .SelectMany(_ => Find(_, glob, exclude)));
         }
         else
         {
-            return root.EnumerateFileSystemInfos(first)
+            return dir.EnumerateFileSystemInfos(first)
                 .Where(_ => !exclude(_))
                 .SelectMany(c =>
                 {

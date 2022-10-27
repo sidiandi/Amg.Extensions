@@ -232,6 +232,7 @@ public class FileSystemExtensionsTests
     }
 
     [Test]
+    [Platform("Windows")]
     public void SplitDirectoriesUnc()
     {
         var p = @"\\server\share$\some\long\path\with\directories\hello.txt";
@@ -372,6 +373,7 @@ public class FileSystemExtensionsTests
     [TestCase(@"C:\a\b\c\d\..\.", @"C:\a\b\c")]
     [TestCase(@"C:\a\b\c\d\..\..\..\f", @"C:\a\f")]
     [TestCase(@"\\server\share$\a\b\c\d\", @"\\server\share$\a\b\c\d")]
+    [Platform("Windows")]
     public void Canonical(string path, string expectedCanonicalPath)
     {
         Assert.That(path.Canonical(), Is.EqualTo(expectedCanonicalPath));

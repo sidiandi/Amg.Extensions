@@ -12,7 +12,7 @@ internal class FileSystem : IFileSystem
 {
     internal static class NativeMethods
     {
-        [DllImport("libc.so")]
+        [DllImport("libc")]
         public static extern int link(string oldpath, string newpath);
     }
 

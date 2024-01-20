@@ -21,5 +21,5 @@ public class Hello
 
     public virtual HttpClient Web => new HttpClient();
 
-    public readonly Queue<int> Count = new ();
+    public readonly Queue<int> Count = new();
 }

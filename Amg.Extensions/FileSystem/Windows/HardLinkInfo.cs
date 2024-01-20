@@ -6,7 +6,7 @@ namespace Amg.FileSystem.Windows;
 
 class HardLinkInfo : IHardLinkInfo
 {
-    public static Task<HardLinkInfo> Get(string path) 
+    public static Task<HardLinkInfo> Get(string path)
         => Task.FromResult(new HardLinkInfo(path));
 
     HardLinkInfo(string path)

@@ -89,7 +89,7 @@ namespace Amg.GetOpt
         static string GetSyntax(ParameterInfo p)
         {
             var s = $"{Parser.LongNameForCsharpIdentifier(p.Name!)}{TypeSyntax(p.ParameterType)}";
-            return p.HasDefaultValue 
+            return p.HasDefaultValue
                 ? s.Quote("[", "]")
                 : s.Quote("<", ">");
         }

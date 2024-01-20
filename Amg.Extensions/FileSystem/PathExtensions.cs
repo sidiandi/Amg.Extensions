@@ -817,7 +817,7 @@ are more recent.
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static Task<IHardLinkInfo> HardlinkInfo(this string path) 
+    public static Task<IHardLinkInfo> HardlinkInfo(this string path)
         => FileSystem.Current.GetHardLinkInfo(path);
 
     /// <summary>

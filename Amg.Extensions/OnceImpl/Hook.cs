@@ -48,7 +48,7 @@ Following fields are not readonly:
             BindingFlags.NonPublic);
 #pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
 
-        var unsuitableProperties = properties.Where(f => f.CanWrite && (f.GetMethod is { }  && !f.GetMethod.IsVirtual));
+        var unsuitableProperties = properties.Where(f => f.CanWrite && (f.GetMethod is { } && !f.GetMethod.IsVirtual));
 
         if (unsuitableProperties.Any())
         {

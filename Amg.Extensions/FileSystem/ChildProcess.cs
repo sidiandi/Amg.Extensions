@@ -74,7 +74,7 @@ public static class ChildProcess
         }
         else
         {
-            return x is null 
+            return x is null
                 ? String.Empty
                 : x.ToString() ?? String.Empty;
         }

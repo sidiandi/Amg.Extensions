@@ -11,7 +11,7 @@ public class TimeIntervalTests
         var i = new TimeInterval(from, to);
         Assert.That(i.From, Is.EqualTo(from));
         Assert.That(i.To, Is.EqualTo(to));
-        Assert.That(i.Duration, Is.EqualTo(to-from));
+        Assert.That(i.Duration, Is.EqualTo(to - from));
 
         TimeInterval.MaxValue.Contains(i).Should().BeTrue();
 

@@ -28,7 +28,7 @@ public static class AutoBuild
     /// <param name="args"></param>
     /// <param name="main"></param>
     /// <returns></returns>
-    public static int Main(string[]? args = null, Func<string[],int>? main = null)
+    public static int Main(string[]? args = null, Func<string[], int>? main = null)
     {
         if (args == null)
         {

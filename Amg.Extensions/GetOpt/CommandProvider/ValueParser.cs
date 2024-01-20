@@ -83,7 +83,7 @@ namespace Amg.GetOpt
             args.SetPos(temp);
 
             var a = Array.CreateInstance(elementType, items.Count);
-            for (int i=0;i<a.Length; ++i)
+            for (int i = 0; i < a.Length; ++i)
             {
                 a.SetValue(items[i], i);
             }

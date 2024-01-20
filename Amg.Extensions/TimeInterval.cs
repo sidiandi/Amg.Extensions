@@ -8,7 +8,7 @@ public sealed class TimeInterval : IComparable<TimeInterval>, IEquatable<TimeInt
 {
     readonly DateTime from;
     readonly DateTime to;
-    
+
     [JsonConstructor]
     public TimeInterval(DateTime from, DateTime to)
     {
@@ -88,7 +88,7 @@ public sealed class TimeInterval : IComparable<TimeInterval>, IEquatable<TimeInt
     /// <returns></returns>
     public static TimeInterval Week(DateTime time)
     {
-        var d = (int)time.DayOfWeek-1;
+        var d = (int)time.DayOfWeek - 1;
         if (d < 0) d += 7;
         return new TimeInterval(time.Date.AddDays(-d), _ => _.AddDays(7));
     }

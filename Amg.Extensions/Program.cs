@@ -4,7 +4,7 @@ public static class Program
 {
     public static int Once() =>
         AutoBuild.Main(
-            main: _ => Amg.GetOpt.GetOpt.Main(_, 
+            main: _ => Amg.GetOpt.GetOpt.Main(_,
                 Amg.Once.Create(Amg.Extensions.SystemExtensions.GetClassWithMainMethod()!)));
 
     public static int GetOpt()

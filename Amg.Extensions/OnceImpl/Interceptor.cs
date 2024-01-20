@@ -50,7 +50,7 @@ internal class Interceptor : IInterceptor
         else
         {
             invocation.ReturnValue = cache.GetOrAdd(
-                cacheKey, 
+                cacheKey,
                 () => CreateInvocation(this, cacheKey, invocation))
                 .ReturnValue;
         }

@@ -37,7 +37,7 @@ public static class DictionaryExtensions
                 return existingValue;
             }
         }
-                
+
         var value = factory();
 
         lock (dictionary)

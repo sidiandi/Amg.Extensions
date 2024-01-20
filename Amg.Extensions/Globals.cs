@@ -6,5 +6,5 @@ global using System.Collections.Generic;
 
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("Amg.Extensions.Test")]
+[assembly: InternalsVisibleTo("Amg.Extensions.Test")]
 

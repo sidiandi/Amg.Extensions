@@ -1,6 +1,4 @@
 ﻿using Amg.Extensions;
-using System;
-using System.Collections.Generic;
 
 namespace Amg.GetOpt
 {

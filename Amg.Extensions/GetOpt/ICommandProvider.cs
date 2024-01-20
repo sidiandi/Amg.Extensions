@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Amg.GetOpt;
+﻿namespace Amg.GetOpt;
 
 public interface ICommandProvider
 {

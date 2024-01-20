@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Amg.GetOpt
+﻿namespace Amg.GetOpt
 {
     /// <summary>
     /// Marks a default command.

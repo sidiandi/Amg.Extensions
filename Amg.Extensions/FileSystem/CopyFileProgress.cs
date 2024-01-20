@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Amg.FileSystem;
+﻿namespace Amg.FileSystem;
 
 public class CopyFileProgress
 {

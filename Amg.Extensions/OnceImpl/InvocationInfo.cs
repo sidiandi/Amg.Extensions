@@ -1,6 +1,4 @@
-﻿using Castle.DynamicProxy;
-using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Amg.OnceImpl;
 

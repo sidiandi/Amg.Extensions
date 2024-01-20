@@ -1,5 +1,4 @@
 ﻿using Amg.Extensions;
-using System.Linq;
 
 namespace Amg.GetOpt;
 

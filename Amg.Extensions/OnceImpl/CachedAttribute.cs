@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Amg.OnceImpl;
+﻿namespace Amg.OnceImpl;
 
 /// <summary>
 /// Mark a method with this attribute to cache the result in the file system.

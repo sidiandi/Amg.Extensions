@@ -1,8 +1,6 @@
 ﻿using Serilog;
-using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Amg.GetOpt.Test;
 

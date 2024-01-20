@@ -1,5 +1,4 @@
 ﻿using Amg.Extensions;
-using System;
 using System.IO;
 
 namespace Amg.GetOpt.Test;

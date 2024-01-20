@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Amg.GetOpt.Test;
+﻿namespace Amg.GetOpt.Test;
 
 [TestFixture]
 public class CommandProviderTests

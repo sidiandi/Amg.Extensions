@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Amg.GetOpt
+﻿namespace Amg.GetOpt
 {
     /// <summary>
     /// Indicates that the property contains commands and options.

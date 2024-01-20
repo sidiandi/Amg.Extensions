@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace Amg.GetOpt;
+﻿namespace Amg.GetOpt;
 
 public class NoDefaultCommandException : Exception
 {

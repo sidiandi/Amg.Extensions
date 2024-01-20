@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Amg.OnceImpl.Example;
+﻿namespace Amg.OnceImpl.Example;
 
 internal class Build
 {

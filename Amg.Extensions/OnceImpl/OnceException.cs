@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
-
-namespace Amg.OnceImpl;
+﻿namespace Amg.OnceImpl;
 
 public class OnceException : Exception
 {

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Amg.GetOpt.Test;
+﻿namespace Amg.GetOpt.Test;
 
 [Description("Test command object")]
 internal class TestCommandObject

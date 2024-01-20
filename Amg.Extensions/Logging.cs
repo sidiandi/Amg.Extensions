@@ -1,7 +1,6 @@
 ﻿using Amg.Extensions;
 using Amg.FileSystem;
 using Serilog;
-using System;
 using System.Reflection;
 
 namespace Amg;

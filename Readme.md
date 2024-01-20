@@ -1,6 +1,6 @@
 # Amg.Extensions
 
-Extensions for .NET 6.
+Frequently used extensions for .NET
 
 Install via [Nuget](https://www.nuget.org/packages/Amg.Extensions/):
 ```
@@ -11,11 +11,15 @@ dotnet add package Amg.Extensions
 
 ## To Do
 
+* Refactor so that Amg.Extensions does not have any other packages as dependencies
+* Remove serilog
 * Increase test coverage
 * ChildProcess
 
 ## Done
 
+* remove SonarAnalyzer warnings
+* Migrate to .net 8, C# 12
 * release script
 * automated nuget package generation with Github actions
 * Create classes with *"Once"* semantics

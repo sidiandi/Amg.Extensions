@@ -6,29 +6,25 @@ public class TimeIntervalTests
     [Test]
     public void WorkWithTimeInterval()
     {
-        var from = new DateTime(2022, 4, 3, 12, 34, 23);
-        var to = new DateTime(2024, 9, 2, 9, 57, 32);
+        var from = new DateTime(2022, 4, 3, 12, 34, 23, DateTimeKind.Utc);
+        var to = new DateTime(2024, 9, 2, 9, 57, 32, DateTimeKind.Utc);
         var i = new TimeInterval(from, to);
         Assert.That(i.From, Is.EqualTo(from));
         Assert.That(i.To, Is.EqualTo(to));
         Assert.That(i.Duration, Is.EqualTo(to-from));
 
-        Assert.That(TimeInterval.MaxValue.Contains(i));
+        TimeInterval.MaxValue.Contains(i).Should().BeTrue();
 
-        Assert.That(TimeInterval.Month(from), Is.EqualTo(
-            new TimeInterval(new DateTime(2022, 4, 1), new DateTime(2022, 5, 1))));
+        // months
+        TimeInterval.Month(from).Should().Be(new TimeInterval(new DateTime(2022, 4, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2022, 5, 1, 0, 0, 0, DateTimeKind.Utc)));
+        TimeInterval.Month(from).NextMonth().Should().Be(new TimeInterval(new DateTime(2022, 5, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2022, 6, 1, 0, 0, 0, DateTimeKind.Utc)));
 
-        Assert.That(TimeInterval.Month(from).NextMonth(), Is.EqualTo(
-            new TimeInterval(new DateTime(2022, 5, 1), new DateTime(2022, 6, 1))));
-
-        Assert.That(TimeInterval.Week(from), Is.EqualTo(
-            TimeInterval.Parse("[2022-03-28, 2022-04-04[")));
-
-        Assert.That(TimeInterval.Week(from).NextWeek(), Is.EqualTo(
-            TimeInterval.Parse("[2022-04-04, 2022-04-11[")));
+        // weeks
+        TimeInterval.Week(from).Should().Be(TimeInterval.Parse("[2022-03-28, 2022-04-04["));
+        TimeInterval.Week(from).NextWeek().Should().Be(TimeInterval.Parse("[2022-04-04, 2022-04-11["));
 
         // round-trip parse
-        Assert.That(TimeInterval.Parse(i.ToString()), Is.EqualTo(i));
+        TimeInterval.Parse(i.ToString()).Should().Be(i);
 
         var afterIInterval = new TimeInterval(to, to.AddDays(1));
         Assert.That(i.Intersect(afterIInterval).Duration, Is.EqualTo(TimeSpan.Zero));
@@ -45,14 +41,14 @@ public class TimeIntervalTests
         Assert.That(i.Contains(inI), Is.True);
         Assert.That(i.Offset(_ => _.AddMinutes(1)), Is.EqualTo(
             new TimeInterval(
-                new DateTime(2022, 4, 3, 12, 35, 23),
-                new DateTime(2024, 9, 2, 9, 58, 32))));
+                new DateTime(2022, 4, 3, 12, 35, 23, DateTimeKind.Utc),
+                new DateTime(2024, 9, 2, 9, 58, 32, DateTimeKind.Utc))));
 
         Assert.That(TimeInterval.FiscalYear(i.From), Is.EqualTo(
-            new TimeInterval(new DateTime(2021, 10, 1), new DateTime(2022, 10, 1))));
+            new TimeInterval(new DateTime(2021, 10, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2022, 10, 1, 0, 0, 0, DateTimeKind.Utc))));
 
         Assert.That(TimeInterval.Year(i.From), Is.EqualTo(
-            new TimeInterval(new DateTime(2022, 1, 1), new DateTime(2023, 1, 1))));
+            new TimeInterval(new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2023, 1, 1, 0, 0, 0, DateTimeKind.Utc))));
 
         Assert.That(i.CompareTo(i), Is.EqualTo(0));
         Assert.That(i.CompareTo(i.Offset(_ => _.AddMonths(-1))), Is.EqualTo(1));

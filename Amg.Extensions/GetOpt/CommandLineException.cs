@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 
 namespace Amg.GetOpt;
 
-[Serializable]
 public class CommandLineException : Exception
 {
     public ParserState? Args { get; }
@@ -25,10 +24,6 @@ public class CommandLineException : Exception
     }
 
     public CommandLineException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
-
-    protected CommandLineException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 

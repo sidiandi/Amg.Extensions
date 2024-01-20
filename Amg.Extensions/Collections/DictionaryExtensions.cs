@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Amg.Collections;
 
@@ -35,22 +36,47 @@ public static class DictionaryExtensions
     {
         lock (dictionary)
         {
-            if (!dictionary.TryGetValue(key, out var value))
+            if (dictionary.TryGetValue(key, out var existingValue))
             {
-                Monitor.Exit(dictionary);
-                try
-                {
-                    value = factory();
-                }
-                finally
-                {
-                    Monitor.Enter(dictionary);
-                }
-                dictionary[key] = value;
-                return value;
+                return existingValue;
             }
-            return value;
         }
+                
+        var value = factory();
+
+        lock (dictionary)
+        {
+            dictionary[key] = value;
+        }
+        return value;
+    }
+
+    /// <summary>
+    /// "Caching" function: get an element of a dictionary or creates it and adds it if it not yet exists.
+    /// </summary>
+    /// <typeparam name="Key"></typeparam>
+    /// <typeparam name="Value"></typeparam>
+    /// <param name="dictionary"></param>
+    /// <param name="key"></param>
+    /// <param name="factory"></param>
+    /// <returns></returns>
+    public static async Task<Value> GetOrAddAsync<Key, Value>(this IDictionary<Key, Value> dictionary, Key key, Func<Task<Value>> factory)
+    {
+        lock (dictionary)
+        {
+            if (dictionary.TryGetValue(key, out var existingValue))
+            {
+                return existingValue;
+            }
+        }
+
+        var value = await factory();
+
+        lock (dictionary)
+        {
+            dictionary[key] = value;
+        }
+        return value;
     }
 
     /// <summary>

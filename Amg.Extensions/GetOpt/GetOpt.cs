@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amg.Extensions;
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -68,12 +69,9 @@ public static class GetOpt
         try
         {
             var result = parser.Run().Result;
-            foreach (var i in result)
+            foreach (var i in result.NotNull())
             {
-                if (i is { })
-                {
-                    Console.WriteLine(i);
-                }
+                Console.WriteLine(i);
             }
         }
         catch (AggregateException aex)

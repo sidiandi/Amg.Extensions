@@ -25,12 +25,6 @@ internal class Interceptor : IInterceptor
 
     public IEnumerable<IInvocation> Invocations => cache.Values;
 
-    static MethodInfo GetterFromSetter(MethodInfo method)
-    {
-        var getterName = System.Text.RegularExpressions.Regex.Replace(method.Name, "^set_", "get_");
-        return method.DeclaringType!.GetMethod(getterName)!;
-    }
-
     public void Intercept(Castle.DynamicProxy.IInvocation invocation)
     {
         if (!type.Equals(invocation.Method.DeclaringType))

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
@@ -36,14 +37,14 @@ public sealed class TimeInterval : IComparable<TimeInterval>, IEquatable<TimeInt
     public override string ToString() => $"[{From:o}, {To:o}[";
     public static TimeInterval Parse(string timeIntervalString)
     {
-        var oDateTime = @"\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}\.\d+)?";
+        var oDateTime = @"\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}\.\d+Z?)?";
         var re = $@"\[(?<from>{oDateTime}),\s*(?<to>{oDateTime})\[";
         var m = Regex.Match(timeIntervalString, re);
         if (m.Success)
         {
             return new TimeInterval(
-                DateTime.Parse(m.Groups["from"].Value),
-                DateTime.Parse(m.Groups["to"].Value));
+                DateTime.Parse(m.Groups["from"].Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal),
+                DateTime.Parse(m.Groups["to"].Value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal));
         }
         else
         {
@@ -59,20 +60,22 @@ public sealed class TimeInterval : IComparable<TimeInterval>, IEquatable<TimeInt
     public static TimeInterval FiscalYear(DateTime time)
     {
         var f = time.Month < 10
-            ? new DateTime(time.Year - 1, 10, 1)
-            : new DateTime(time.Year, 10, 1);
+            ? Date(time, time.Year - 1, 10, 1)
+            : Date(time, time.Year, 10, 1);
         return new TimeInterval(f, f.AddYears(1));
     }
 
     public static TimeInterval Year(DateTime time)
     {
-        var f = new DateTime(time.Year, 1, 1);
+        var f = Date(time, time.Year, 1, 1);
         return new TimeInterval(f, f.AddYears(1));
     }
 
+    static DateTime Date(DateTime time, int year, int month, int day) => new DateTime(year, month, day, 0, 0, 0, time.Kind);
+
     public static TimeInterval Month(DateTime time)
     {
-        var f = new DateTime(time.Year, time.Month, 1);
+        var f = Date(time, time.Year, time.Month, 1);
         return new TimeInterval(f, f.AddMonths(1));
     }
 

@@ -10,8 +10,6 @@ namespace Amg.Extensions;
 /// </summary>
 public static class EnumerableExtensions
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
-
     /// <summary>
     /// Concat one (1) new element
     /// </summary>
@@ -619,7 +617,9 @@ where TFirst : class
 
             bucket[count++] = item;
             if (count != size)
+            {
                 continue;
+            }
 
             yield return bucket;
 
@@ -627,8 +627,10 @@ where TFirst : class
             count = 0;
         }
 
-        if (bucket != null && count > 0)
+        if (bucket != null)
+        {
             yield return bucket.Take(count).ToArray();
+        }
     }
 
     public static IEnumerable<T> Top80<T>(this IEnumerable<T> e, Func<T, double> scalar) => e.Top(scalar, 0.8);
@@ -672,27 +674,5 @@ where TFirst : class
             }
         }
         return new PivotTable<D, A0, A1>(keys0, keys1, cells);
-    }
-}
-
-public record PivotTable<D, A0, A1>
-{
-    public PivotTable(A0[] axis0, A1[] axis1, D[,] data)
-    {
-        Axis0 = axis0;
-        Axis1 = axis1;
-        Data = data;
-    }
-
-    public A0[] Axis0 { get; private set; }
-    public A1[] Axis1 { get; private set; }
-    public D[,] Data { get; private set; }
-
-    public IEnumerable<D> GetRow(int axis1)
-    {
-        foreach (var j in Enumerable.Range(0, Axis0.Length))
-        {
-            yield return Data[j, axis1];
-        }
     }
 }

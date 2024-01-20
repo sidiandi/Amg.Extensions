@@ -9,8 +9,6 @@ namespace Amg.FileSystem.Windows
     /// </summary>
     internal class FileSystem : IFileSystem
     {
-        private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
-
         /// <summary>
         /// Create a hardlink at fileName that points to existingFileName
         /// </summary>
@@ -27,8 +25,10 @@ namespace Amg.FileSystem.Windows
             return await HardLinkInfo.Get(path);
         }
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         const int ERROR_ALREADY_EXISTS = 183;
         const int ERROR_PATH_NOT_FOUND = 3;
+#pragma warning restore S1144 // Unused private types or members should be removed
 
         public Task CopyFile(
             string existingFileName,

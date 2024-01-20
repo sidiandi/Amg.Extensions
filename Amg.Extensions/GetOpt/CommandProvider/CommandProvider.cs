@@ -91,8 +91,8 @@ namespace Amg.GetOpt
 
         internal static bool HasDescriptionAttributes(Type type)
         {
-            return type.GetMethods().Any(_ => HasDescriptionAttribute(_)) ||
-                type.GetProperties().Any(_ => HasDescriptionAttribute(_));
+            return Array.Exists(type.GetMethods(), _ => HasDescriptionAttribute(_)) ||
+                Array.Exists(type.GetProperties(), _ => HasDescriptionAttribute(_));
         }
 
         IEnumerable<IOption>? options = null;

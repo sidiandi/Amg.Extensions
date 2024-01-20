@@ -92,10 +92,10 @@ public class PersistenDictionaryTests
     {
         var r = new PersonData(
             Name: "Alice",
-            DateOfBirth: new DateTime(2022, 4, 1),
+            DateOfBirth: new DateTime(2022, 4, 1, 0, 0, 0, DateTimeKind.Local),
             Id: 123,
             Registered: true,
-            new TimeInterval(new DateTime(2028, 9, 1), _ => _.AddYears(13))
+            new TimeInterval(new DateTime(2028, 9, 1, 0, 0, 0, DateTimeKind.Local), _ => _.AddYears(13))
         );
 
         var dir = CreateTestDirectory();
@@ -124,10 +124,10 @@ public record PersonData(
 {
     public static PersonData Sample() => new PersonData(
         Name: "Alice",
-        DateOfBirth: new DateTime(2022, 4, 1),
+        DateOfBirth: new DateTime(2022, 4, 1, 0, 0, 0, DateTimeKind.Utc),
         Id: 123,
         Registered: true,
-        new TimeInterval(new DateTime(2028, 9, 1), _ => _.AddYears(13))
+        new TimeInterval(new DateTime(2028, 9, 1, 0, 0, 0, DateTimeKind.Utc), _ => _.AddYears(13))
     );
 }
 

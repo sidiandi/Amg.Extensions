@@ -172,8 +172,6 @@ public class Parser
         }
     }
 
-    T Check<T>(Func<T> f) => Check(this.state, f);
-
     internal static T Check<T>(ParserState args, Func<T> f)
     {
         try

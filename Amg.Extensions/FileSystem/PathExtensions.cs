@@ -152,7 +152,7 @@ public static class PathExtensions
     {
         var e = path.Extension();
         var equalityComparer = FileSystem.Current.PathEqualityComparer;
-        return extensionsWithDots.Any(_ => equalityComparer.Equals(_, e));
+        return Array.Exists(extensionsWithDots, _ => equalityComparer.Equals(_, e));
     }
 
     /// <summary>
@@ -722,7 +722,7 @@ are more recent.
             && Math.Abs((source.LastWriteTimeUtc - dest.LastWriteTimeUtc).TotalSeconds) < 1.0;
     }
 
-    static async Task<string> CopyFile(this string source, string dest, bool overwrite = false)
+    public static async Task<string> CopyFile(this string source, string dest, bool overwrite = false)
     {
         return await new FileInfo(source).CopyFile(dest, overwrite);
     }

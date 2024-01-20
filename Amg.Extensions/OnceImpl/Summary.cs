@@ -68,8 +68,9 @@ static class Summary
     internal static IWritable Error(IEnumerable<IInvocation> invocations) => TextFormatExtensions.GetWritable(@out =>
     {
         @out.WriteLine();
-        foreach (var failedTarget in invocations.OrderByDescending(_ => _.End)
-            .Where(_ => _.Failed()))
+        foreach (var failedTarget in invocations
+            .Where(_ => _.Failed())
+            .OrderByDescending(_ => _.End))
         {
             var exception = failedTarget.Exception!;
             var r = GetRootCause(exception);

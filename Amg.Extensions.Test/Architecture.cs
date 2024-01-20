@@ -32,18 +32,4 @@ public class Architecture
         if (!t.IsPublic) return;
         w.WriteLine(t.FullName);
     });
-
-    string FullSignature(MethodInfo i) => $"{i.DeclaringType!.Assembly.GetName().Name}:{i.DeclaringType.FullName}.{i.Name}({Parameters(i)}): {Nice(i.ReturnType)}";
-
-    static string Nice(Type t)
-    {
-        return t.Name;
-    }
-
-    static string Parameters(MethodInfo m)
-    {
-        return m.GetParameters()
-            .Select(_ => Nice(_.ParameterType))
-            .Join(", ");
-    }
 }

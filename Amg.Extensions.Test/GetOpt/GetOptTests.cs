@@ -1,5 +1,6 @@
 ﻿using Amg.Extensions;
 using System;
+using System.IO;
 
 namespace Amg.GetOpt.Test;
 
@@ -74,12 +75,13 @@ class GetOptTests : TestBase
     public void HelpNoDescriptionAttributes()
     {
         var o = new WithStandardOptions(new TestCommandObjectWithoutAttributes());
-        var p = new CommandProviderImplementation(o);
-        var helpMessage = TextFormatExtensions.GetWritable(_ => Amg.GetOpt.Help.PrintHelpMessage(_, p)).ToString();
-        Console.WriteLine(helpMessage);
-        Assert.That(helpMessage, Does.Contain("Run a command."));
-        Assert.That(helpMessage, Does.Contain("Options:"));
-        Assert.That(helpMessage, Is.EqualTo(@"
+        var commandProvider = new CommandProviderImplementation(o);
+        var w = new StringWriter { NewLine = "\n" };
+        Amg.GetOpt.Help.PrintHelpMessage(w, commandProvider);
+        var helpMessage = w.ToString();
+        helpMessage.Should().Contain("Run a command.");
+        helpMessage.Should().Contain("Options:");
+        var expectedHelpMessage = @"
 usage: testhost [options] <command> [<args>]
 Run a command.
 
@@ -97,7 +99,8 @@ Options:
 --value <string>
 -v|--verbosity <quiet|minimal|normal|detailed> : Logging verbosity
 --version : Print version and exit.
-"));
+";
+        helpMessage.Should().Be(expectedHelpMessage);
     }
 
     [Test]

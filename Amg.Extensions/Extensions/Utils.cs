@@ -8,8 +8,6 @@ namespace Amg.Extensions;
 /// </summary>
 public static class Utils
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
-
     public static string HumanReadable(this TimeSpan? duration)
     {
         return duration is { }

@@ -48,18 +48,6 @@ internal class Container
         public IEnumerable<IInvocation> Invocations { get; private set; }
     }
 
-    readonly IDictionary<string, object> _cache = new Dictionary<string, object>();
-
-    static string GenerateCacheKey(Type type, object?[] arguments)
-    {
-        var id = new
-        {
-            Type = type,
-            Arguments = arguments
-        };
-        return System.Text.Json.JsonSerializer.Serialize(id);
-    }
-
     /// <summary>
     /// Get an instance of type that executes methods marked with [Once] only once and caches the result.
     /// </summary>

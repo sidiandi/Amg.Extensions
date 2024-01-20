@@ -198,38 +198,9 @@ public class Glob : IEnumerable<string>
         }
     }
 
-    static IEnumerable<FileSystemInfo> Find(
-        IEnumerable<FileSystemInfo> fileSystemInfos,
-        string[] glob,
-        Func<FileSystemInfo, bool> exclude)
-    {
-        return fileSystemInfos
-            .Where(_ => !exclude(_))
-            .SelectMany(c =>
-            {
-                if (c is FileInfo f)
-                {
-                    return (IEnumerable<FileSystemInfo>)new[] { c };
-                }
-                else if (c is DirectoryInfo d)
-                {
-                    return new[] { c }.Concat(Find(d, glob, exclude));
-                }
-                else
-                {
-                    return Enumerable.Empty<FileSystemInfo>();
-                }
-            });
-    }
-
     static bool IsSkipAnyNumberOfDirectories(string dirname)
     {
         return dirname.Equals("**");
-    }
-
-    static bool IsWildCard(string dirname)
-    {
-        return dirname.Contains('*');
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -243,8 +214,7 @@ public class Glob : IEnumerable<string>
     /// <returns></returns>
     public IEnumerable<FileSystemInfo> EnumerateFileSystemInfos()
     {
-        var excludeFunc = new Func<FileSystemInfo, bool>((FileSystemInfo i) =>
-            exclude.Any(_ => _(i)));
+        var excludeFunc = new Func<FileSystemInfo, bool>((FileSystemInfo i) => Array.Exists(exclude, _ => _(i)));
 
         var rootInfo = root.Info();
         return rootInfo == null

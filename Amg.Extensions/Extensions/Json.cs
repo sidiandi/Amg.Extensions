@@ -7,19 +7,24 @@ namespace Amg.Extensions;
 
 public static class Json
 {
+    /// <summary>
+    /// Deserialize JSON directly from a file.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="path"></param>
+    /// <returns></returns>
     public static async Task<T?> Read<T>(string path)
     {
-        // deserialize JSON directly from a file
         using var file = File.OpenRead(path);
         return await JsonSerializer.DeserializeAsync<T>(file);
     }
 
     /// <summary>
-    /// serialize JSON directly to a file
+    /// Serialize JSON directly to a file.
     /// </summary>
     public static async Task Write<T>(string path, T data)
     {
-        using var file = File.OpenWrite(path.EnsureParentDirectoryExists());
+        using var file = File.Create(path.EnsureParentDirectoryExists());
         await JsonSerializer.SerializeAsync(file, data);
     }
 

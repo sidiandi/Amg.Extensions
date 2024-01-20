@@ -50,43 +50,7 @@ public static class Help
         }
     }
 
-    static string SyntaxWithoutCommand(ICommand command)
-        => Regex.Replace(command.Syntax, @"^[^\s]+\s+", String.Empty);
-
     static IWritable Format<T>(IEnumerable<T> e) => Line(e);
-
-    static IWritable Indented<T>(IEnumerable<T> e, int indent = 2) => TextFormatExtensions.GetWritable(w =>
-    {
-        foreach (var i in e)
-        {
-            var p = GetPropertyValues(i).Select(_ => _.SafeToString()).ToArray();
-            if (p[0].Length > indent)
-            {
-                w.WriteLine(p[0]);
-                w.Write(new string(' ', indent));
-                w.WriteLine(p[1]);
-            }
-            else
-            {
-                w.Write(p[0]);
-                w.Write(new string(' ', indent - p[0].Length));
-                w.WriteLine(p[1]);
-            }
-        }
-    });
-
-    static string SafeSubstring(string x, int startIndex, int length)
-    {
-        length = Math.Min(length, x.Length - startIndex);
-        if (length < 0)
-        {
-            return string.Empty;
-        }
-        else
-        {
-            return x.Substring(startIndex, length);
-        }
-    }
 
     static TextWriter Wrap(TextWriter w, int indent = 2, int pageWidth = 80)
     {
@@ -156,14 +120,4 @@ public static class Help
         var properties = type.GetProperties();
         return properties.Select(_ => _.GetValue(x)).ToArray();
     }
-
-    static string ShortLong(IOption option)
-    {
-        return $"{Short(option)}{Parser.longOptionPrefix}{option.Long}";
-    }
-
-    static string Short(IOption o)
-        => o.Short == null
-        ? string.Empty
-        : $"{Parser.shortOptionPrefix}{o.Short} | ";
 }

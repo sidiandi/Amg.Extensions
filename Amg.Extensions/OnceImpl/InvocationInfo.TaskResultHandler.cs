@@ -10,7 +10,9 @@ partial class InvocationInfo
         private readonly InvocationInfo invocationInfo;
         private readonly Task<Result?> task;
 
+#pragma warning disable S1144 // Unused private types or members should be removed
         public TaskResultHandler(InvocationInfo invocationInfo, Task<Result?> task)
+#pragma warning restore S1144 // Unused private types or members should be removed
         {
             this.invocationInfo = invocationInfo;
             this.task = task;

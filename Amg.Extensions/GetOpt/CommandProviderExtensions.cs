@@ -40,7 +40,7 @@ internal static class CommandProviderExtensions
         }
         else
         {
-            return c.FirstOrDefault(_ => _.IsDefault);
+            return c.Find(_ => _.IsDefault);
         }
     }
 }

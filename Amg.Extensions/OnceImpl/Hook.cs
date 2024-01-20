@@ -10,8 +10,6 @@ namespace Amg.OnceImpl;
 
 internal class Hook : IProxyGenerationHook
 {
-    private static readonly Serilog.ILogger Logger = Serilog.Log.Logger.ForContext(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
-
     public void MethodsInspected()
     {
         foreach (var type in types)

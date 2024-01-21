@@ -50,8 +50,8 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
         {
             Execute(
                 $"insert or replace into {table} values (@key, @value)",
-                ToParam(nameof(key), key),
-                ToParam(nameof(value), value));
+                ToParam(fKey, key),
+                ToParam(fValue, value));
         }
     }
 
@@ -69,8 +69,8 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
     {
         Execute(
             $"insert into {table} values (@key, @value)",
-            ToParam(nameof(key), key),
-            ToParam(nameof(value), value));
+            ToParam(fKey, key),
+            ToParam(fValue, value));
     }
 
     public void Add(KeyValuePair<K, V> item) => Add(item.Key, item.Value);
@@ -83,15 +83,15 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
     public bool Contains(KeyValuePair<K, V> item)
     {
         return GetValue<long>($"select count(*) from {table} where key = @key and value = @value",
-            ToParam(nameof(item.Key), item.Key),
-            ToParam(nameof(item.Value), item.Value)
+            ToParam(fKey, item.Key),
+            ToParam(fValue, item.Value)
             ) == 1;
     }
 
     public bool ContainsKey(K key)
     {
         return GetValue<long>($"select count(*) from {table} where key = @key",
-            ToParam(nameof(key), key)
+            ToParam(fKey, key)
             ) == 1;
     }
 

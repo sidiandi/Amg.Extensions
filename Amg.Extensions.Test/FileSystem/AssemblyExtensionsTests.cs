@@ -14,9 +14,8 @@ public class AssemblyExtensionsTests
     public void GetDirectories()
     {
         var type = typeof(TestData);
-        Console.WriteLine(type.GetProgramDataDirectory());
-        Console.WriteLine(type.TempPath());
-        Console.WriteLine(type.LocalApplicationData());
-        Assert.Pass();
+        type.GetProgramDataDirectory().IsValidPath().Should().BeTrue();
+        type.TempPath().IsValidPath().Should().BeTrue();
+        type.LocalApplicationData().IsValidPath().Should().BeTrue();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Amg.Extensions;
+using NUnit.Framework;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -15,9 +16,9 @@ public class FileSystemExtensionsTests
     {
         var testDir = CreateTestDirectory();
         await ChildProcess.Run("git", new[] { "init", testDir });
-        Assert.That(testDir.EnumerateFileSystemEntries().Any());
+        testDir.EnumerateFileSystemEntries().Should().NotBeEmpty();
         testDir.EnsureDirectoryIsEmpty();
-        Assert.That(testDir.EnumerateFileSystemEntries().Any(), Is.Not.True);
+        testDir.EnumerateFileSystemEntries().Should().BeEmpty();
     }
 
     [Test]
@@ -27,10 +28,10 @@ public class FileSystemExtensionsTests
         var testDir = CreateTestDirectory();
         var repoDir = testDir.Combine("repo");
         await ChildProcess.Run("git.exe", new[] { "init", repoDir });
-        Assert.That(repoDir.IsDirectory());
-        Assert.That(repoDir.EnumerateFileSystemEntries().Any());
+        repoDir.IsDirectory().Should().BeTrue();
+        repoDir.EnumerateFileSystemEntries().Should().NotBeEmpty();
         testDir.EnsureDirectoryIsEmpty();
-        Assert.That(repoDir.Exists(), Is.Not.True);
+        repoDir.Exists().Should().BeFalse();
     }
 
     [Test]
@@ -40,8 +41,8 @@ public class FileSystemExtensionsTests
         var d = testDir.Combine("a", "b");
         var f = d.Combine("c");
         f.EnsureParentDirectoryExists();
-        Assert.That(Directory.Exists(d));
-        Assert.That(f.Parent(), Is.EqualTo(d));
+        d.IsDirectory().Should().BeTrue();
+        f.Parent().Should().Be(d);
     }
 
     [Test]
@@ -261,8 +262,8 @@ public class FileSystemExtensionsTests
     {
         var time = new DateTime(2019, 10, 5, 3, 31, 12, 234, DateTimeKind.Local);
         var fn = time.ToFileName();
-        Assert.That(fn.IsValidFileName());
-        Assert.AreEqual("2019-10-05T03_31_12.2340000_02_00", fn);
+        fn.IsValidFileName().Should().BeTrue();
+        fn.Should().StartWith("2019-10-05T03_31_12.2340000_");
     }
 
     [Test]

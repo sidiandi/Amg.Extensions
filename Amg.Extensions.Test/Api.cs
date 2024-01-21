@@ -135,14 +135,12 @@ namespace Amg
             var api2 = new Amg.Api.Assembly(new[] { t }.Concat(api.Types.Skip(1)).ToArray());
 
             var d = Api.Api.Diff(api, api2);
-            Assert.That(d.Added.Length == 1);
-            Assert.That(d.Removed.Length == 0);
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(d, new JsonSerializerOptions
+            d.Added.Should().HaveCount(1);
+            d.Removed.Should().HaveCount(0);
+            _ = System.Text.Json.JsonSerializer.Serialize(d, new JsonSerializerOptions
             {
                 WriteIndented = true
-            }));
-
+            });
         }
     }
-
 }

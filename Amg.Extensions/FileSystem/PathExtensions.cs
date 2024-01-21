@@ -617,6 +617,12 @@ are more recent.
         return (x.IndexOfAny(invalidCharacters) < 0) && (x.Length <= maxFileNameLength);
     }
 
+    public static bool IsValidPath(this string path)
+    {
+        var skip = System.IO.Path.IsPathFullyQualified(path) ? 1 : 0;
+        return path.SplitDirectories().Skip(skip).All(_ => _.IsValidFileName());
+    }
+
     public static string ToFileName(this DateTime time)
     {
         return time.ToString("o").MakeValidPosixFileName();

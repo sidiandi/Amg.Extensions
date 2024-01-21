@@ -141,7 +141,16 @@ Options:
             exitCode = GetOpt.Main(new string[] { "1", "1" }, o);
         });
         output.Should().BeEmpty();
-        error.Should().Be("unexpected operands\n\n=> [0] 1\r\n   [1] 1\n\n\nSee testhost --help\r\n");
+        var expectedError = """
+unexpected operands
+
+=> [0] 1
+   [1] 1
+
+
+See testhost --help
+""";
+        error.Should().Be(expectedError);
         ExitCode.CommandLineError.Should().Be(exitCode);
     }
 }

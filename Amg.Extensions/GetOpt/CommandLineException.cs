@@ -24,8 +24,9 @@ public class CommandLineException : Exception
     {
     }
 
-    public string ErrorMessage => $@"{Message}
+    public string ErrorMessage => $"""
+{Message}
 
 {Args}
-";
+""";
 }

@@ -106,7 +106,7 @@ Options:
         var o = new OnlyDefaultCommand();
         var p = new CommandProviderImplementation(o);
         var helpMessage = TextFormatExtensions.GetWritable(_ => Amg.GetOpt.Help.PrintHelpMessage(_, p)).ToString();
-        Assert.Pass(helpMessage);
+        helpMessage.Should().NotBeEmpty();
     }
 
     [Test]
@@ -114,7 +114,7 @@ Options:
     {
         var o = new WithDefaultCommand();
         var exitCode = GetOpt.Main(new string[] { "1", "1" }, o);
-        Assert.AreEqual(ExitCode.Success, exitCode);
+        exitCode.Should().Be(ExitCode.Success);
         Assert.That(o.result, Is.EqualTo(2));
     }
 
@@ -125,7 +125,7 @@ Options:
         var (output, error) = CaptureOutput(() =>
         {
             var exitCode = GetOpt.Main(new string[] { "-h" }, o);
-            Assert.AreEqual(ExitCode.HelpDisplayed, exitCode);
+            exitCode.Should().Be(ExitCode.HelpDisplayed);
         });
         output.Should().NotContain("do-something");
         error.Should().Be(String.Empty);

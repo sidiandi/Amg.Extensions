@@ -10,7 +10,7 @@ public class Architecture
     public void Api()
     {
         var assembly = typeof(Amg.GetOpt.GetOpt).Assembly;
-        Assert.Pass(PublicApi(assembly).ToString());
+        PublicApi(assembly).ToString().Should().NotBeEmpty();
     }
 
     IWritable PublicApi(Assembly a) => TextFormatExtensions.GetWritable(w =>

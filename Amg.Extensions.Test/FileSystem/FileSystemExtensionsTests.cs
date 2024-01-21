@@ -149,7 +149,7 @@ public class FileSystemExtensionsTests
     [Test]
     public void ChangeRoot()
     {
-        Assert.AreEqual(@"C:\newRoot\a\b\c\d", @"C:\oldRoot\a\b\c\d".ChangeRoot(@"C:\oldRoot", @"C:\newRoot"));
+        @"C:\oldRoot\a\b\c\d".ChangeRoot(@"C:\oldRoot", @"C:\newRoot").Should().Be(@"C:\newRoot\a\b\c\d");
     }
 
     static string TestFileName(int i)
@@ -226,7 +226,7 @@ public class FileSystemExtensionsTests
     public void SplitAndCombine()
     {
         var p = @"C:\temp\some\long\path\with\directories\hello.txt";
-        Assert.AreEqual(p, p.SplitDirectories().CombineDirectories());
+        p.SplitDirectories().CombineDirectories().Should().Be(p);
     }
 
     [Test]
@@ -236,7 +236,7 @@ public class FileSystemExtensionsTests
         var p = @"\\server\share$\some\long\path\with\directories\hello.txt";
         var d = p.SplitDirectories();
         Assert.That(d[0], Is.EqualTo(@"\\server\share$"));
-        Assert.AreEqual(p, d.CombineDirectories());
+        d.CombineDirectories().Should().Be(p);
     }
 
     [Test]
@@ -253,8 +253,8 @@ public class FileSystemExtensionsTests
     {
         var time = new DateTime(2019, 10, 5, 3, 31, 12, 234, DateTimeKind.Utc);
         var fn = time.ToFileName();
-        Assert.That(fn.IsValidFileName());
-        Assert.AreEqual("2019-10-05T03_31_12.2340000Z", fn);
+        fn.IsValidFileName().Should().BeTrue();
+        fn.Should().Be("2019-10-05T03_31_12.2340000Z");
     }
 
     [Test]
@@ -272,12 +272,12 @@ public class FileSystemExtensionsTests
         var time = new DateTime(2019, 10, 5, 3, 31, 12, 234, DateTimeKind.Utc);
         var fn = time.ToShortFileName();
         Assert.That(fn.IsValidFileName());
-        Assert.AreEqual("4U8QD6UITWO0", fn);
+        fn.Should().Be("4U8QD6UITWO0");
 
         time = DateTime.MaxValue;
         fn = time.ToShortFileName();
         Assert.That(fn.IsValidFileName());
-        Assert.AreEqual("NZ14HU5JI7ZZ", fn);
+        fn.Should().Be("NZ14HU5JI7ZZ");
     }
 
     [Test]

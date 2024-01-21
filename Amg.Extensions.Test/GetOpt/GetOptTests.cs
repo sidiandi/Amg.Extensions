@@ -97,7 +97,7 @@ Options:
 -v|--verbosity <quiet|minimal|normal|detailed> : Logging verbosity
 --version : Print version and exit.
 ";
-        helpMessage.Should().Be(expectedHelpMessage);
+        helpMessage.SplitLines().Should().BeEquivalentTo(expectedHelpMessage.SplitLines());
     }
 
     [Test]

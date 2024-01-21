@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Amg;
 
-public sealed class TimeInterval : IComparable<TimeInterval>, IEquatable<TimeInterval>
+public sealed record TimeInterval : IComparable<TimeInterval>, IEquatable<TimeInterval>
 {
     readonly DateTime from;
     readonly DateTime to;
@@ -115,8 +115,6 @@ public sealed class TimeInterval : IComparable<TimeInterval>, IEquatable<TimeInt
         return To.CompareTo(other.To);
     }
 
-    public override bool Equals(object? obj) => Equals(obj as TimeInterval);
-
     public bool Equals(TimeInterval? other)
     {
         return !(other is null) && (From.Equals(other.From) && To.Equals(other.To));
@@ -125,21 +123,6 @@ public sealed class TimeInterval : IComparable<TimeInterval>, IEquatable<TimeInt
     public override int GetHashCode()
     {
         return From.GetHashCode();
-    }
-
-    public static bool operator ==(TimeInterval left, TimeInterval right)
-    {
-        if (ReferenceEquals(left, null))
-        {
-            return ReferenceEquals(right, null);
-        }
-
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(TimeInterval left, TimeInterval right)
-    {
-        return !(left == right);
     }
 
     public static bool operator <(TimeInterval left, TimeInterval right)

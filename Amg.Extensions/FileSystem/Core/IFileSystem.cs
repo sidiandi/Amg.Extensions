@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Amg.FileSystem;
+namespace Amg.FileSystem.Core;
 
 public interface IFileSystem
 {
@@ -17,7 +17,7 @@ public interface IFileSystem
         string existingFileName,
         string newFileName,
         IProgress<CopyFileProgress>? progress = null,
-        System.Threading.CancellationToken cancellationToken = new CancellationToken(),
+        CancellationToken cancellationToken = new CancellationToken(),
         CopyFileOptions? options = null);
 
     /// <summary>
@@ -38,26 +38,4 @@ public interface IFileSystem
     Task CreateHardLink(string fileName, string existingFileName);
 
     IEqualityComparer<string> PathEqualityComparer { get; init; }
-}
-
-public static class FileSystem
-{
-    static IFileSystem? _current = null;
-
-    public static IFileSystem Current
-    {
-        get
-        {
-            if (_current is null)
-            {
-                _current = System.Environment.OSVersion.Platform switch
-                {
-                    PlatformID.Win32NT => new Windows.FileSystem(),
-                    PlatformID.Unix => new Unix.FileSystem(),
-                    _ => throw new NotSupportedException()
-                };
-            }
-            return _current;
-        }
-    }
 }

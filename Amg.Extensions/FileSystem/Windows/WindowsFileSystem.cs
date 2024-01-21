@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using Amg.FileSystem.Core;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Amg.FileSystem.Windows

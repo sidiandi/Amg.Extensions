@@ -1,5 +1,6 @@
 ﻿using Amg.FileSystem;
 using Serilog;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -26,11 +27,12 @@ public static class TestHelpers
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static string CreateTestDirectory([CallerMemberName] string? name = null)
+    public static string CreateTestDirectory([CallerFilePath] string? path = null, [CallerLineNumber] int line = 0)
     {
+        var name = $"{path!.FileNameWithoutExtension()}-{line}";
         return Assembly.GetExecutingAssembly()
             .Directory()
-            .Combine("test", name!).EnsureDirectoryIsEmpty();
+            .Combine("test", name).EnsureDirectoryIsEmpty();
     }
 
     /// <summary>
@@ -38,11 +40,12 @@ public static class TestHelpers
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static string CreatePersistentTestDirectory([CallerMemberName] string? name = null)
+    public static string CreatePersistentTestDirectory([CallerFilePath] string? path = null, [CallerLineNumber] int line = 0)
     {
+        var name = $"{path!.FileNameWithoutExtension()}-{line}";
         return Assembly.GetExecutingAssembly()
             .Directory()
-            .Combine("test.p", name!).EnsureDirectoryExists();
+            .Combine("test", name!).EnsureDirectoryExists();
     }
 
     public static void Dump<T>(IEnumerable<T> e)

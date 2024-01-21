@@ -64,10 +64,8 @@ class GetOptTests : TestBase
         var o = new WithStandardOptions(new TestCommandObject());
         var p = new CommandProviderImplementation(o);
         var helpMessage = TextFormatExtensions.GetWritable(_ => Amg.GetOpt.Help.PrintHelpMessage(_, p)).ToString();
-        Console.WriteLine(helpMessage);
-        Assert.That(helpMessage, Does.Contain("Run a command."));
-        Assert.That(helpMessage, Does.Contain("Options:"));
-        Assert.Pass(helpMessage);
+        helpMessage.Should().Contain("Run a command.");
+        helpMessage.Should().Contain("Options:");
     }
 
     [Test]
@@ -129,9 +127,8 @@ Options:
             var exitCode = GetOpt.Main(new string[] { "-h" }, o);
             Assert.AreEqual(ExitCode.HelpDisplayed, exitCode);
         });
-        Console.WriteLine(output);
-        Assert.That(!output.Contains("do-something"));
-        Assert.That(error, Is.EqualTo(String.Empty));
+        output.Should().NotContain("do-something");
+        error.Should().Be(String.Empty);
     }
 
     [Test]
@@ -143,8 +140,8 @@ Options:
         {
             exitCode = GetOpt.Main(new string[] { "1", "1" }, o);
         });
-        Console.WriteLine(output);
-        Console.WriteLine(error);
-        Assert.AreEqual(ExitCode.CommandLineError, exitCode);
+        output.Should().BeEmpty();
+        error.Should().Be("unexpected operands\n\n=> [0] 1\r\n   [1] 1\n\n\nSee testhost --help\r\n");
+        ExitCode.CommandLineError.Should().Be(exitCode);
     }
 }

@@ -6,8 +6,11 @@
 
   <ItemGroup>
     <Compile Remove="TestResults\**" />
+    <Compile Remove="Test\**" />
     <EmbeddedResource Remove="TestResults\**" />
+    <EmbeddedResource Remove="Test\**" />
     <None Remove="TestResults\**" />
+    <None Remove="Test\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,10 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Amg.Extensions\Amg.Extensions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Test\" />
   </ItemGroup>
 
 </Project>

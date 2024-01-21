@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Threading.Tasks;
 
 namespace Amg.Extensions;
 
@@ -27,7 +28,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static string Join(this IEnumerable<object?> e, string separator)
     {
-        return string.Join(separator, e.Where(_ => _ != null));
+        return string.Join(separator, e.NotNull());
     }
 
     /// <summary>
@@ -35,10 +36,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <param name="e"></param>
     /// <returns></returns>
-    public static string Join(this IEnumerable<object?> e)
-    {
-        return e.Join(System.Environment.NewLine);
-    }
+    public static string Join(this IEnumerable<object?> e) => e.Join(System.Environment.NewLine);
 
     /// <summary>
     /// Zips together two sequences. The shorter sequence is padded with default values.
@@ -357,7 +355,7 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> e) where T : class
+    public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> e)
     {
 #pragma warning disable S1905 // Redundant casts should not be used
         // cast required from T? to T
@@ -672,4 +670,24 @@ where TFirst : class
         }
         return new PivotTable<D, A0, A1>(keys0, keys1, cells);
     }
+
+    /// <summary>
+    /// Replaces a null IEnumerable by an empty one
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? e)
+    {
+        return e is null ? Enumerable.Empty<T>() : e;
+    }
+
+    public static IEnumerable EmptyIfNull(this IEnumerable? e)
+    {
+        return e is null ? (new object[] { }) : e;
+    }
+
+    public static IEnumerable<T> FirstOf<T>(this IEnumerable<T> e, IEnumerable<T> candidates) => candidates.Intersect(e).Take(1);
+
+    public static IEnumerable<T> Order<T>(this IEnumerable<T> e, IEnumerable<T> order) => order.Intersect(e).Concat(e.Except(order));
 }

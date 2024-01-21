@@ -1,6 +1,5 @@
 ﻿using Amg.Extensions;
 using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -1159,47 +1158,5 @@ are more recent.
             }
             return parts;
         }
-    }
-}
-
-public static class AssemblyExtensions
-{
-    public static string Directory(this Assembly assembly) => assembly.Location.Parent();
-
-    /// <summary>
-    /// Gets the ProgramData directory for type
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static string GetProgramDataDirectory(this System.Type type)
-    {
-        var assembly = type.Assembly;
-        return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).Combine(new[]
-        {
-                assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company,
-                assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
-                type.Name
-            }.Where(_ => !String.IsNullOrEmpty(_))
-        .NotNull()
-        .ToArray());
-    }
-
-    /// <summary>
-    /// Gets the ProgramData directory for type
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static string GetProgramDataDirectory(this Assembly assembly)
-    {
-        var p = new[]
-        {
-                assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company,
-                assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product,
-                assembly.GetName().Name
-            }
-        .NotNull()
-        .Select(_ => _.MakeValidFileName());
-
-        return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).Combine(p.ToArray());
     }
 }

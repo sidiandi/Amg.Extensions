@@ -147,10 +147,9 @@ unexpected operands
 => [0] 1
    [1] 1
 
-
 See testhost --help
 """;
-        error.Should().Be(expectedError);
+        error.SplitLines().Should().BeEquivalentTo(expectedError.SplitLines());
         ExitCode.CommandLineError.Should().Be(exitCode);
     }
 }

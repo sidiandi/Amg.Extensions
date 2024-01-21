@@ -87,7 +87,7 @@ task release-patch {
 	
 	$tag = "v$($version.version)"
 	
-	$version.version | sc version.txt
+	$version.version | Set-Content version.txt
 	
 	"Release $tag"
 	

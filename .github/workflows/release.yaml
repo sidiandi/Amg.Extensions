@@ -29,4 +29,4 @@ jobs:
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
       run: |
-        nuget push Amg.Extensions.${VERSION}.nupkg -Verbosity detailed -ApiKey ${{ secrets.NUGET_PUSH_AMG_EXTENSIONS }} -Source https://api.nuget.org/v3/index.json
+        dotnet nuget push Amg.Extensions.${VERSION}.nupkg --api-key ${{ secrets.NUGET_PUSH_AMG_EXTENSIONS }} --source https://api.nuget.org/v3/index.json

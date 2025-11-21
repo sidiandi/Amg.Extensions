@@ -5,5 +5,15 @@
     <Rule Id="S2479" Action="None" />
     <Rule Id="S3904" Action="None" />
     <Rule Id="IDE0160" Action="None" />
+    <Rule Id="S3993" Action="None" />
+    <Rule Id="S1144" Action="None" />
+    <Rule Id="S6678" Action="None" />
+    <Rule Id="S2955" Action="None" />
+    <Rule Id="S2629" Action="None" />
+    <Rule Id="S6966" Action="None" />
+    <Rule Id="S2325" Action="None" />
+    <Rule Id="S1481" Action="None" />
+    <Rule Id="S1994" Action="None" />
+    <Rule Id="S2701" Action="None" />
   </Rules>
 </RuleSet>

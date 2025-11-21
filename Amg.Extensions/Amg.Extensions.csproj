@@ -13,13 +13,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 		<PackageReference Include="Castle.Core" Version="5.1.1" />
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="System.Data.Sqlite" Version="1.0.118" />
+		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
 		<PackageReference Include="Pidgin" Version="3.2.2" />
-		<PackageReference Include="Serilog" Version="3.1.1" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+		<PackageReference Include="Serilog" Version="4.1.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
 	</ItemGroup>
 
 </Project>

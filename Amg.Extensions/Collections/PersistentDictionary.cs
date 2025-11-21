@@ -1,6 +1,6 @@
 ﻿using Amg.FileSystem;
 using System.Collections;
-using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
@@ -12,14 +12,14 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
     {
         this.table = table ?? $"dic_{typeof(K).Name}_{typeof(V).Name}";
 
-        var connectionStringBuilder = new SQLiteConnectionStringBuilder()
+        var connectionStringBuilder = new SqliteConnectionStringBuilder()
         {
             DataSource = file,
-            SyncMode = SynchronizationModes.Off,
-            JournalMode = SQLiteJournalModeEnum.Memory
+            Mode = SqliteOpenMode.ReadWriteCreate,
+            Cache = SqliteCacheMode.Shared
         };
         var create = !file.IsFile();
-        connection = new SQLiteConnection(connectionStringBuilder.ConnectionString);
+        connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
         connection.Open();
         if (create)
         {
@@ -34,7 +34,7 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
     }
 
     readonly string table;
-    readonly SQLiteConnection connection;
+    readonly SqliteConnection connection;
 
     public V this[K key]
     {
@@ -152,9 +152,9 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
         return e.GetEnumerator();
     }
 
-    readonly Dictionary<string, SQLiteCommand> commands = new();
+    readonly Dictionary<string, SqliteCommand> commands = new();
 
-    SQLiteCommand GetCommand(string sql)
+    SqliteCommand GetCommand(string sql)
     {
         return commands.GetOr(sql, () =>
         {
@@ -164,9 +164,10 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
         });
     }
 
-    int Execute(string sql, params SQLiteParameter[] parameters)
+    int Execute(string sql, params SqliteParameter[] parameters)
     {
         var command = GetCommand(sql);
+        command.Parameters.Clear();
         foreach (var p in parameters)
         {
             command.Parameters.Add(p);
@@ -174,7 +175,7 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
         return command.ExecuteNonQuery();
     }
 
-    IEnumerable<object[]> Enumerate(string sql, params SQLiteParameter[] parameters)
+    IEnumerable<object[]> Enumerate(string sql, params SqliteParameter[] parameters)
     {
         var command = connection.CreateCommand();
         command.CommandText = sql;
@@ -195,9 +196,9 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
         }
     }
 
-    SQLiteParameter ToParam<T>(string name, T value)
+    SqliteParameter ToParam<T>(string name, T value)
     {
-        return new SQLiteParameter(name, ToDbValue(value));
+        return new SqliteParameter(name, ToDbValue(value));
     }
 
     object ToDbValue<T>(T value)
@@ -214,7 +215,7 @@ public sealed class PersistentDictionary<K, V> : IDictionary<K, V>, IDisposable
         return r!;
     }
 
-    T GetValue<T>(string sql, params SQLiteParameter[] parameters)
+    T GetValue<T>(string sql, params SqliteParameter[] parameters)
     {
         return Enumerate(sql, parameters).Select(_ => (T)_[0]).First();
     }
